@@ -1,0 +1,34 @@
+# Meeting 1: 2011-09-26 #
+
+Major tasks divided:
+
+1. Server: in APL, maybe examine Joey's code.
+2. API: Scheme
+3. Client: Scheme
+4. Bots: automatic bots for the server
+5. Web client: Probably not necessary given the other client
+
+Website, repo decisions:
+
+1. Monotone VCS
+2. Ikiwiki for the wiki and issue tracking
+
+Task Distribution:
+
+awhsu: api, server, client
+gwatt: server
+dtdannen: client, api
+
+Protocol requirements:
+
+1. List available players, join a game
+2. Nicknames
+3. Playing the games
+
+Weekly assignments:
+
+awhsu: repo, wiki, tron server?
+gwatt: protocol,network part of server
+dtdannen: client screens and flow, api interface
+
+
