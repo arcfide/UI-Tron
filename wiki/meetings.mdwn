@@ -1,4 +1,6 @@
-# Meeting 1: 2011-09-26 #
+# Record of Meetings and Task Assignments #
+
+## Meeting 1: 2011-09-26 ##
 
 Major tasks divided:
 
@@ -30,5 +32,13 @@ Weekly assignments:
 awhsu: repo, wiki, tron server?
 gwatt: protocol,network part of server
 dtdannen: client screens and flow, api interface
+
+## Meeting 2: 2011-10-03 ##
+
+Status Report: Little progress.
+
+Infrastructure Deadline: Thursday
+
+Protocol seems to be pretty well set in broad terms.
 
 
