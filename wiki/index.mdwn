@@ -9,7 +9,7 @@ information on the tron game used in B351.
 2. Application Pages
   1. [[API|apps/api]]
   2. [[Server|apps/server]]
-    1. [[Server Protocol|protocol]]
+     1. [[Server Protocol|protocol]]
   3. [[Client|apps/client]]
 
 
