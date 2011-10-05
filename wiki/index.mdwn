@@ -12,4 +12,9 @@ information on the tron game used in B351.
      1. [[Server Protocol|protocol]]
   3. [[Client|apps/client]]
 
+-------
 
+All wikis are supposed to have a [[Sandbox|sandbox]], so this one does
+too.
+
+This wiki is powered by [[ikiwiki]].
