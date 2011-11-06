@@ -1,8 +1,15 @@
-1. Send name
+Protocol from the perspective of the bot:
+
+1. Send this bot's name to the server
+
 2. Receive starting positions
    (x,y) Player/Opponent
    Map
+
 3. Loop: 
-   Send move (u,d,l,r)
-   Receive opponent move
-   Until receive Game Over win/loss/tie
+   Send move (n,w,s,e) to the server
+   Receive opponent move from the server
+   Until receive Game Over win/loss/draw
+     win  = you won.
+     loss = you lost, sucker.
+     draw = that was boring.
