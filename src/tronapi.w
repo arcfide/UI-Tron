@@ -44,8 +44,8 @@ that you specify.\par}
 To begin, let's get some basic terminology down. We say that a given 
 {\it brain} is a procedure that controls how a given tron cycle 
 moves. We say that a brain |plays| a given move, which is a direction 
-either north, south, east, or west. You cannot move back against 
-the way that you came, and you must make a move at every turn.
+either north, south, east, or west. To move back against 
+the way that you came results in instant death, and you must make a move at every turn.
 
 We will define a variable |valid-moves| here which will give you 
 the set of your valid moves.
@@ -70,7 +70,7 @@ they start.
 syntax that handles the creation of the boiler plate for you.
 
 \medskip\verbatim
-(define-tron-brain (proc name state size walls ppos opos play) body+ ...)
+(define-tron-brain (proc name size walls play ppos opos state) body+ ...)
 !endverbatim\medskip
 
 \noindent Here is a short synopsis of the above identifiers:
@@ -101,14 +101,22 @@ that allows it to communicate its moves to the driver, either locally
 or remotely.
 
 $$\.{proc} : 
-  \\{port}\to(\\{state}\times\\{ppos}\times\\{opos}\to\.{\#<void>})$$
+  \\{port}\to(\\{port}\times\\{state}\to\.{\#<void>})$$
 
-\noindent The |proc| does the initial connection and setup for the 
-brain and given game instance, and returns a procedure that, when executed,
-will run the brain. The brain is then expected to send its next move
-to the server through the port using the |play| procedure.  
-The brain never needs to interact with that port though. 
-All the brain has to do is to use |play| to send its move to the server.
+\noindent The value returned by the |proc| procedure is another procedure 
+which is the main brain procedure. Whenever we call this procedure, we 
+expect that the user provided code will run, and that a single play will 
+be made. We want to make sure that we accept the user state at the 
+beginning of each turn from the previous turn, and we want to provide the 
+port that we are going to use to get moves from the server. We use a port 
+here instead of passing |ppos| and |opos| directly because we need to 
+be able to work both on the remote server as well as a local one. 
+The |proc| procedures is thus in charge of doing the initial protocol 
+negotiation and getting all of the static information set up before 
+returning the brain playing procedure. The user's brain code should 
+send the next move to the server using the |play| procedure. This 
+means that the user body brain code never has to worry about things 
+like ports and the like. 
 The |play| procedure has the following signature:
 
 $$\.{play} : \\{move} \to \.{\#<void>}$$
@@ -128,109 +136,48 @@ of each wall on the map. The variables |ppos| and |opos| both have the
 form |(x . y)| and represent the current positions of the player and 
 opponent respectively. 
 
+@ Let's start by defining the actual |define-tron-brain| syntax. We 
+want to expand into something that will implement all of the above 
+semantics, though some of the work will be left until later.
+
 @p
-;;; This is currently broken and doesn't match the spec above, 
-;;; so it must be fixed.
 (define-syntax define-tron-brain
   (syntax-rules ()
-    [(_ (proc name info get play) b1 b2 ...)
-     (define (proc port)
-       (let ([info @<Get board information@>]
-             [get (make-get-proc port)]
-             [play (make-play-proc port)]
-             [name name])
-         (lambda () b1 b2 ...)))]))
+    [(_ (proc name size walls play ppos opos state) b1 b2 ...)
+     (define (proc play-port)
+       @<Send |name| and get game |size| and |walls|@>
+       (let ([play (make-play-proc play-port)])
+         (lambda (port state) 
+           @<Get player and opponent positions, |ppos| and |opos|@>
+           b1 b2 ...)))]))
+
+@ The |play| procedure is actually a simple closure over the |play-port|. 
+Recall the signature for the |play| procedure.
+
+$$\.{play} : \\{move} \to \.{\#<void>}$$
+
+\noindent We can then easily define |make-play-proc| as a |play| procedure 
+generator.
+
+@p
+(define (make-play-proc port)
+  (lambda (move)
+    (assert (memq move valid-moves))
+    (format port "~s~n" move)
+    (flush-output-port port)))
 
 @ As an example of using |define-tron-brain| let's make a brain 
-that randomly plays a move. Our player's name will be 
-``Random move bot.''
+that randomly plays a move. Our player's name will be
+``Random move bot.'' Note that this bot very well may pick a
+move that sends it backwards, thus dieing and losing. ``Random
+move bot'' is not very smart.
 
 @p
-(define-tron-brain (random-move-bot "Random Move Bot" gi get play)
+(define-tron-brain 
+  (random-move-bot "Random Move Bot" size walls play ppos opos state)
   (play (list-ref valid-moves (random (length valid-moves)))))
 
-@* The game information structure. The game structure holds the 
-initial board configuration, which consists of the players' 
-starting positions, as well as the size of the board and the 
-location of any obstacles. The |board| object will contain
-the following three fields.
-
-$$\vbox{
-  \offinterlineskip
-  \halign{
-    \strut # & # \cr
-    {\bf Field name} & {\bf Type} \cr
-    \noalign{\hrule}
-    $\\{starting-positions}$ & Two coordinates: player and opponent \cr
-    $\\{size}$ & |(width . height)| \cr
-    $\\{obstacles}$ & | ((x . y) ...)| where each coordinate is an obstacle. \cr
-  }
-}$$
-
-\noindent The $\\{starting-positions}$ field will contain a pair containing 
-two coordinates, and the |car| of that pair will contain the starting 
-position of the player and the |cdr| the position of the opponent.
-
-@p
-(define-record-type board
-  (fields
-    starting-positions
-    size
-    obstacles))
-
-@* Getters and ``Play''ers.
-We provide some basic abstractions for creating the |get| 
-and |play| procedures for our brains. Their implementations 
-are discussed further below. The makers will each take a 
-port to send or receive from, and will return procedures 
-of the right signature for getters and players. A move
-is represented as the direction from the bot's current
-location to the desired location.
-
-We first define the maker for the |get| procedure. 
-The |get| procedure has the following signature:
-
-$$\.{get} :\ \to\\{move}||\\{result}$$
-
-@p
-(define (make-get-proc port)
-  (lambda () 
-    (let ([res (read port)])
-      (cond
-        [(symbol? res) res]
-        [(pair? res) res]
-        ;; This should never happen, supposedly.
-        [else (error #f "invalid move from opponent")]))))
-
-@ The |play| maker is easier, because it just has to validate 
-the move and then write it out. We are not assuming that the 
-server or the simulator is going to handle the buffering for 
-us, so we will need to flush things ourselves.
-
-$$\.{play} : \\{move}\to\.{\#<void>}$$
-
-\noindent On the less simple side, we want to also have the 
-thunk |current-position| which will return our current position. 
-We will therefore return two values from |make-play-proc| and 
-we will have some hidden state that we use to track the current
-position of the player on the board. This way, the user will 
-easily be able to determine what the current position of 
-the player is at every turn. 
-
-@p
-(define (make-play-proc port start-pos)
-  (let ([pos start-pos])
-    (values
-      (lambda () pos)        
-      (lambda (move) 
-        (assert (valid-move? move))
-        (write move port)
-        (flush-output-port port)
-        (case move
-          [(n) (set! pos (cons (car pos) (-1+ (cdr pos))))]
-          [(w) (set! pos (cons (-1+ (car pos)) (cdr pos)))]
-          [(e) (set! pos (cons (1+ (car pos)) (cdr pos)))]
-          [(s) (set! pos (cons (car pos) (1+ (cdr pos))))])))))
+@* The Tron Server Protocol.
 
 @* Playing a game. To play a game locally, without having a connection 
 to a server or anything like that, you use the |play-tron| procedure.
@@ -268,9 +215,4 @@ $$\.{create-board} : \\{width}\times\\{height}\\times\\{obstacles}\to\.{\#<void>
 @p
 (define (create-board w h obstacles)
 
-
-
-
 @* Running on a server.
-
-@* The tron server protocol.
