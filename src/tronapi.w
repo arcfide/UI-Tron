@@ -1,40 +1,98 @@
 
 @* Introduction. This document details the implementation of an API 
-for the tron game used in CSCI-B351. More information about the API 
-for the users can be found on the Wiki site.
+for the tron game used in CSCI-B351. More information about the 
+IU Tron game can be found at the following web address:
 
-The tron api is focused on providing a simple but flexible interface 
-for allowing pluggable game brains or A.I.'s to play a tron game. In 
-tron, two players compete against one another for space. 
+\medskip\verbatim
+http://www.sacrideo.us/iu-tron/
+!endverbatim\medskip
 
-{\it Need some information about the game play.}
+\noindent 
+The tron api is focused on providing a simple but flexible interface for 
+allowing pluggable game brains or A.I.'s to play a tron game. In
+tron, two players compete against one another for space. Each player 
+drives a virtual light cycle that continuously flies inside of a virtual 
+map (2-dimensional) at a constant rate of speed. You can turn your 
+cycle left and right through the map, trying to stay alive longer than 
+your opponent. The walls are deadly, and hitting any wall or protrusion 
+results in instant death. Additionally, your light cycles are emitting 
+light that leaves a solidified trail behind, and hitting these walls, 
+either your own or the trail left by your opponent also results in 
+instant death. Don't die first! You can either win the game by being 
+alive longer than your opponent, lose by dying first, or you can 
+draw by dying at the exact same time.
 
-This library provides a basic API for testing brains against one 
-another as well as for connecting to a game server to play the game.
+In this library, each cycle moves in discrete lock-step fashion, 
+where the players each take a turn at the same time, moving their 
+cycle forward one step. Since the most interesting aspects of the 
+game are the actual brains that drive the cycles, this library 
+provides all of the basic functionality for creating tron brains.
+Here's a simple list of the features that are provided:
 
-@* Some notes on terminology.
+{\narrower
+\medskip
+\item{1.} You can define brains that handle the server protocol 
+transparently, and use them both locally on your own machine 
+and remotely to play on the server.
+\item{2.} You can run your brain against others locally, so that 
+you can test your brains offline without having to connect to the 
+game server for each run.
+\item{3.} You can easily run your brain against a remote server 
+that you specify.\par}
+
+@ {\it Notes on terminology.} 
 To begin, let's get some basic terminology down. We say that a given 
 {\it brain} is a procedure that controls how a given tron cycle 
-moves. We say that it moves in a specific compass direction from 
-its current position. That is, moves are either north, west, 
-south, or east. 
+moves. We say that a brain |plays| a given move, which is a direction 
+either north, south, east, or west. You cannot move back against 
+the way that you came, and you must make a move at every turn.
+
+We will define a variable |valid-moves| here which will give you 
+the set of your valid moves.
 
 @p
 (define valid-moves '(n w s e))
 
-@ Furthermore, we can talk about the board on which the cycles (aka
-your bot) are playing based on a coordinate system, where a given
-coordinate |(x . y)| is a pair where the first value is an integer in
-the range of the board's width, and represents where along the x axis
-the cycle is. Specifically, a board is a row-major matrix where the
-origin is in the upper left hand corner.
+@ The board on which the cycles are playing is a standard 2 dimensional 
+grid that has $[0,w)$ columns and $[0,h)$ rows, where $h$ is the height 
+of the map and $w$ is the width. The origin is in the upper lefthand 
+corner. We refer to a given grid by coordinate point in the form |(x . y)| 
+where |x| is the column and |y| is the row. 
+
+@ Every game starts in the same way, there is a map, and then there 
+are starting positions for each of the players. Each player is given 
+the starting position of the other player, as well as the size of the 
+map and the list of which coordinates in the map are walls. This means 
+that both players have perfect information of the playing field when 
+they start.
 
 @* Creating a tron brain. To create a tron brain, we provide a 
 syntax that handles the creation of the boiler plate for you.
 
 \medskip\verbatim
-(define-tron-brain (proc name info get play) body+ ...)
+(define-tron-brain (proc name state size walls ppos opos play) body+ ...)
 !endverbatim\medskip
+
+\noindent Here is a short synopsis of the above identifiers:
+
+$$\vbox{
+  \offinterlineskip
+  \halign{
+    \strut # & # \hfill\cr
+    {\bf Identifier} & {\bf Use} \cr
+    \noalign{\hrule}
+    $\\{proc}$  & Name of brain procedure \cr
+    $\\{name}$  & String of player name \cr
+    $\\{state}$ & Variable to hold user provided state \cr
+    $\\{size}$  & Holds the size of the map \cr
+    $\\{walls}$ & Alist of coordinates for walls \cr
+    $\\{ppos}$  & Player position \cr
+    $\\{opos}$  & Opponent position \cr
+    $\\{play}$  & Procedure to play move \cr
+    $\\{body+}$ & One or more expressions for the brain \cr
+  }
+}$$
+
 
 \noindent The above form binds |proc| to a procedure that can be used 
 to initialize a simulation.  The |proc| name will be bound to a
@@ -42,29 +100,37 @@ procedure that expects to receive a single argument, which is a port,
 that allows it to communicate its moves to the driver, either locally
 or remotely.
 
-$$\.{proc} : \\{port}\to(\ \to\.{\#<void})$$
+$$\.{proc} : 
+  \\{port}\to(\\{state}\times\\{ppos}\times\\{opos}\to\.{\#<void>})$$
 
 \noindent The |proc| does the initial connection and setup for the 
-brain and given game instance, and returns a thunk that, when executed,
+brain and given game instance, and returns a procedure that, when executed,
 will run the brain. The brain is then expected to send its next move
-to the server through the port using the |get| and |play| procedures
-that are made visible to it.  The brain never needs to interact with
-that port though. All the brain has to do is to use the two |get| and
-|play| procedures that are bound to get the move of the opponent and
-to send its move to the engine.  These two procedures have the
-following syntax:
+to the server through the port using the |play| procedure.  
+The brain never needs to interact with that port though. 
+All the brain has to do is to use |play| to send its move to the server.
+The |play| procedure has the following signature:
 
-$$\eqalign{\.{get} :\ \to \\{move}||\\{game-result}\cr
-\.{play} : \\{move} \to \.{\#<void>}}$$
+$$\.{play} : \\{move} \to \.{\#<void>}$$
 
-\noindent The |info| binding points to a record about the game information, 
-including the size of the board and whether you are the first or second 
-player, and any obstacles that are on the board. We discuss its structure 
-and how to access elements from the info structure a little later. The 
-|name| should be an expression that evaluates to a string, which will 
-be the name of the player that is sent to the server. 
+\noindent It may be that the player or brain needs to keep some information 
+around each time that it is called for the next time around. In order to 
+do this, simply return that state as the return value of the brain body 
+code and it will be available to you again in the |state| variable the 
+next time that the brain is called.
+
+The |name| element should be an expression that evaluates into a string 
+that will be used as the name of the player on the server when reporting 
+scores and information. The |size| variable is a pair |(w . h)| containing 
+the width and height of the map. The |walls| variable will contain 
+an association list of the form |((x . y) ...)| that gives the locations 
+of each wall on the map. The variables |ppos| and |opos| both have the 
+form |(x . y)| and represent the current positions of the player and 
+opponent respectively. 
 
 @p
+;;; This is currently broken and doesn't match the spec above, 
+;;; so it must be fixed.
 (define-syntax define-tron-brain
   (syntax-rules ()
     [(_ (proc name info get play) b1 b2 ...)
