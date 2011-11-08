@@ -79,7 +79,9 @@ A position is encoded as a pair of coordinate and direction or
 syntax that handles the creation of the boiler plate for you.
 
 \medskip\verbatim
-(define-tron-brain (proc name size walls play ppos opos state) body+ ...)
+(define-tron-brain (proc (name size walls play ppos opos) 
+                         (state init))
+  body+ ...)
 !endverbatim\medskip
 
 \noindent Here is a short synopsis of the above identifiers:
@@ -93,6 +95,7 @@ $$\vbox{
     $\\{proc}$  & Name of brain procedure \cr
     $\\{name}$  & String of player name \cr
     $\\{state}$ & Variable to hold user provided state \cr
+    $\\{init}$  & Initial state expression \cr
     $\\{size}$  & Holds the size of the map \cr
     $\\{walls}$ & Alist of coordinates for walls \cr
     $\\{ppos}$  & Player position \cr
@@ -105,12 +108,13 @@ $$\vbox{
 
 \noindent The above form binds |proc| to a procedure that can be used 
 to initialize a simulation.  The |proc| name will be bound to a
-procedure that expects to receive a single argument, which is a port,
-that allows it to communicate its moves to the driver, either locally
+procedure that expects to receive two arguments, which are ports,
+that allow it to communicate its moves to the driver, either locally
 or remotely.
 
 $$\.{proc} : 
-  \\{port}\to(\\{port}\times\\{state}\to\.{\#<void>})$$
+  \\{play-port}\times\\{info-port}
+  \to(\\{port}\times\\{state}\to\.{\#<void>})$$
 
 \noindent The value returned by the |proc| procedure is another procedure 
 which is the main brain procedure. Whenever we call this procedure, we
@@ -120,7 +124,7 @@ the beginning of each turn from the previous turn, and we want to
 provide the port that we are going to use to get moves from the
 server. We use a port here instead of passing |ppos| and |opos|
 directly because we need to be able to work both on the remote server
-as well as a local one.  The |proc| procedures is thus in charge of
+as well as a local one.  The |proc| procedure is thus in charge of
 doing the initial protocol negotiation and getting all of the static
 information set up before returning the brain playing procedure. The
 user's brain code should send the next move to the server using the
@@ -128,7 +132,7 @@ user's brain code should send the next move to the server using the
 to worry about things like ports and the like.  The |play| procedure
 has the following signature:
 
-$$\.{play} : \\{move} \to \.{\#<void>}$$
+$$\.{play} : \\{move}\to\.{\#<void>}$$
 
 \noindent It may be that the player or brain needs to keep some information 
 around each time that it is called for the next time around. In order
@@ -152,8 +156,8 @@ semantics, though some of the work will be left until later.
 @p
 (define-syntax define-tron-brain
   (syntax-rules ()
-    [(_ (proc name size walls play ppos opos state) b1 b2 ...)
-     (define (proc play-port)
+    [(_ (proc (name size walls play ppos opos) (state init)) b1 b2 ...)
+     (define (proc play-port info-port)
        @<Send |name| and get game |size| and |walls|@>
        (let ([play (make-play-proc play-port)])
          (lambda (port state) 
@@ -181,19 +185,35 @@ Note that this bot very well may pick a move that sends it backwards,
 thus dieing and losing. ``Random move bot'' is not very smart.
 
 @p
+;;; This example is out of date, fix it. XXX
 (define-tron-brain 
   (random-move-bot "Random Move Bot" size walls play ppos opos state)
   (play (list-ref valid-moves (random (length valid-moves)))))
 
-@* The Tron Server Protocol.
+@* The Tron Server Protocol. The general process of a client making 
+a connection to the tron server can be outlined thus:
+
+{\medskip\narrower
+\item{1.} Client sends player name.
+\item{2.} Server sends the size of the map as |(w . h)|.
+\item{3.} Server sends the walls as an a list |((x . y) ...)|.
+\item{4.} Server sends the positions of the cycles, listing first the 
+player and then the opponent.
+\item{5.} Player sends move in the form of a direction.
+\item{6.} If the game is won or a draw, the server sends |win| to 
+the winner, and |loss| to the loser or |draw| to both in the case of 
+a draw.
+\item{7.} Otherwise, repeat starting at step 4.\par\medskip}
+
+\noindent 
 
 @* Playing a game. To play a game locally, without having a connection
 to a server or anything like that, you use the |play-tron| procedure.
-It expects to receive two brains as defined by |define-tron-brain|.
-It will simulate the game and show the progress of the game on the
-terminal.
+It expects to receive a board specification and two brains as defined
+by |define-tron-brain|.  It will simulate the game and show the
+progress of the game on the terminal.
 
-$$\.{play-tron} : \\{brain1}\times\\{brain2}\to\.{\#<void>}$$
+$$\.{play-tron} : \\{board}\times\\{brain1}\times\\{brain2}\to\.{\#<void>}$$
 
 \noindent The |play-tron| procedure will take care of a few steps. Firstly, 
 it needs to setup a communication layer so that the two brains can
@@ -206,22 +226,38 @@ communicate over the same protocol as that used by the server.
 \item{4.} Print the result of the game.
 \medskip
 
-\noindent
+\noindent We use string ports to get the data from the players, since we 
+can use the getters on R6RS string ports to constantly get string values 
+of the responses that brains make without having to recreate brains.
 
 @p
-(define (play-tron board b1 b2)
-  (let loop ([board board]) 
-    (unless (winner? board)
-	    (let ([b1-move (b1)]
-		  [b2-move (b2)])
-	      (loop (update-board board b1-move b2-move))))))
+(define (play-tron size walls pos1 pos2 b1 b2)
+  (assert (valid-size? size))
+  (assert (valid-walls? walls))
+  (assert (for-all valid-position? (list pos1 pos2)))
+  (assert (for-all procedure? (list b1 b2)))
+  (let-values ([(b1-play-port b1-get) (make-string-output-port)]
+               [(b2-play-port b2-get) (make-string-output-port)])
+    (let ([info-port (make-info-port size walls)])
+      (let ([b1-play (b1 b1-play-port info-port)]
+            [b2-play (b2 b2-play-port info-port)])
+        @<Simulate tron game@>))))
 
-@ create-board takes the width, height, and a list of all the
-coordinates (row,col) where the obstacles are located.
-
-$$\.{create-board} : \\{width}\times\\{height}\\times\\{obstacles}\to\.{\#<void>}$$
+@ Because we are simulating the actual behavior of the server, we are 
+using a number of different ports, where the real server might use 
+only one for all of the communication. The first of these is our 
+information port. This port should contain the board size and the 
+wall information in the same format as the server will send it. In 
+this case, this means just using |write| a few times.
 
 @p
-(define (create-board w h obstacles)
+(define (make-info-port size walls)
+  (make-string-input-port
+    (format "~s~s~n" size walls)))
+
+@ 
+
+@<Simulate tron game@>=
+
 
 @* Running on a server.
