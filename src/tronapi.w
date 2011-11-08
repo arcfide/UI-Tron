@@ -158,13 +158,16 @@ semantics, though some of the work will be left until later.
   (syntax-rules ()
     [(_ (proc (name size walls play ppos opos) (state init)) b1 b2 ...)
      (define (proc play-port info-port)
-       @<Send |name| and get game |size| and |walls|@>
+       (write name play-port)
        (let ([play (make-play-proc play-port)]
+             [pname name]
              [state init])
-         (lambda (port)
-           @<Get player and opponent positions, |ppos| and |opos|@>
-           (let-values ([(newstate) (let () b1 b2 ...)])
-             (set! state newstate)))))]))
+         (let* ([size (read info-port)] [walls (read info-port)])
+           (printf "~a~n~a~n" size walls)
+           (lambda (port)
+             (let* ([ppos (read port)] [opos (read port)])
+               (let-values ([(newstate) (let () b1 b2 ...)])
+                 (set! state newstate)))))))]))
 
 @ The |play| procedure is actually a simple closure over the
 |play-port|.  Recall the signature for the |play| procedure.
@@ -190,10 +193,11 @@ thus dieing and losing. ``Random move bot'' is not very smart.
 ;;; This example is out of date, fix it. XXX
 (define-tron-brain 
   (random-move-bot ("Random Move Bot" size walls play ppos opos) (state #f))
-  (let* ([adjacent-moves (map get-pos valid-moves (make-list 4 p))]
-	 [safe? (lambda (p) (not (member p walls)))]
-	 [safe-moves (filter safe? (adjacent-moves ppos))])
-    (play (list-ref safe-moves (random (length safe-moves))))))
+  (define (safe? p) (not (member (car p) walls)))
+  (define (ml x) (make-list 4 x))
+  (let* ([adjacent-moves (map get-pos valid-moves (ml ppos) (ml size))]
+	 [safe-moves (filter safe? (map cons adjacent-moves valid-moves))])
+    (play (list-ref (map cdr safe-moves) (random (length safe-moves))))))
 
 @* The Tron Server Protocol. The general process of a client making 
 a connection to the tron server can be outlined thus:
@@ -241,12 +245,31 @@ of the responses that brains make without having to recreate brains.
   (assert (valid-walls? walls))
   (assert (for-all valid-position? (list pos1 pos2)))
   (assert (for-all procedure? (list b1 b2)))
-  (let-values ([(b1-play-port b1-get) (make-string-output-port)]
-               [(b2-play-port b2-get) (make-string-output-port)])
-    (let ([info-port (make-info-port size walls)])
-      (let ([b1-play (b1 b1-play-port info-port)]
-            [b2-play (b2 b2-play-port info-port)])
+  (let-values ([(b1-play-port b1-get) (open-string-output-port)]
+               [(b2-play-port b2-get) (open-string-output-port)])
+    (let ([ip1 (make-info-port size walls)]
+          [ip2 (make-info-port size walls)])
+      (let ([b1-play (b1 b1-play-port ip1)]
+            [b2-play (b2 b2-play-port ip2)])
+        (b1-get) (b2-get) ;; XXX: save these names for printing the winner, etc
         @<Simulate tron game@>))))
+
+@ Let's define some checkers for our game first.
+
+@p
+(define (valid-size? size)
+  (and (pair? size)
+       (integer? (car size))
+       (integer? (cdr size))))
+(define (valid-walls? walls)
+  (and (list? walls)
+       (for-all pair? walls)))
+(define (valid-position? pos)
+  (and (pair? pos)
+       (pair? (car pos))
+       (member (cdr pos) valid-moves)
+       (integer? (caar pos))
+       (integer? (cdar pos))))
 
 @ Because we are simulating the actual behavior of the server, we are 
 using a number of different ports, where the real server might use 
@@ -257,7 +280,7 @@ this case, this means just using |write| a few times.
 
 @p
 (define (make-info-port size walls)
-  (make-string-input-port
+  (open-string-input-port
     (format "~s~s~n" size walls)))
 
 @ The tron game proceeds from the protocol above starting at step 4. 
@@ -272,12 +295,12 @@ to get the moves back from each player.
     (b1-play port1) (b2-play port2)
     (let ([m1 (string->move (b1-get))]
           [m2 (string->move (b2-get))])
-      @<Print game position@>
       @<Get new positions and walls@>
+      @<Print game position@>
       (let ([status (game-status new-pos1 new-pos2 new-walls)])
         (case (game-status new-pos1 new-pos2 new-walls)
           [(draw p1 p2) @<Print game result@>]
-          [else (loop new-pos1 new-pos2 new-walls)]))))
+          [else (loop new-pos1 new-pos2 new-walls)])))))
 
 @ Position ports encode the first part of the fourth protocol stage, where 
 we send the player positions to each player. In this case, we assume 
@@ -286,7 +309,7 @@ the opponent and second position to send.
 
 @p
 (define (make-pos-port p1 p2)
-  (make-string-input-port 
+  (open-string-input-port 
     (format "~s~s~n" p1 p2)))
 
 @ The procedure |string->move| should take a single string 
@@ -316,6 +339,7 @@ board out on the terminal.
         (il (1+ j))))
     (newline)
     (ol (1+ i))))
+(newline)
 
 @ Once we have the moves that the players have made, we want to make 
 those positions and create the updated positions values. We also 
@@ -324,10 +348,8 @@ players are thrown into the walls set.
 
 @c (size pos1 pos2 m1 m2 walls) => (new-pos1 new-pos2 new-walls)
 @<Get new positions and walls@>=
-(define width (car size))
-(define height (cdr size))
-(define new-pos1 (get-pos m1 pos1))
-(define new-pos2 (get-pos m2 pos2))
+(define new-pos1 (get-pos m1 pos1 size))
+(define new-pos2 (get-pos m2 pos2 size))
 (define new-walls (cons* (car pos1) (car pos2) walls))
 
 @ We provide the |get-pos| procedure, which takes a move or direction 
@@ -337,16 +359,17 @@ in that new direction.
 $$\.{get-pos} : \\{move}\times\\{position}\to\\{new-position}$$
 
 @p
-(define (get-pos m old)
-  (let ([x (caar old)] [y (cdar old)])
-    (cons
-      (case m 
-        [(n) (cons x (mod (-1+ y) height))]
-        [(w) (cons (mod (-1+ x) width) y)]
-        [(e) (cons (mod (1+ x) width) y)]
-        [(s) (cons x (mod (1+ y) height))]
-        [else (error #f "invalid move" m)])
-      m)))
+(define (get-pos m old size)
+  (let ([width (car size)] [height (cdr size)])
+    (let ([x (caar old)] [y (cdar old)])
+      (cons
+        (case m 
+          [(n) (cons x (mod (-1+ y) height))]
+          [(w) (cons (mod (-1+ x) width) y)]
+          [(e) (cons (mod (1+ x) width) y)]
+          [(s) (cons x (mod (1+ y) height))]
+          [else (error #f "invalid move" m)])
+        m))))
 
 @ The |game-status| procedure takes the position of player1, position
 of player2, and the current list of walls. If either player position
@@ -362,7 +385,7 @@ player has won. If neither player has crashed let the game continue!
      [(and p1-dead? p2-dead?) 'draw]
      [p1-dead? 'p2]
      [p2-dead? 'p1]
-     [else 'not-over]))
+     [else 'not-over])))
 
 @ When the game has concluded, we want to print the 
 results of the win. We will print out nice little 
@@ -379,4 +402,4 @@ states to each player.
   [else (error #f "invalid status" status)])
 
 
-  @* Running) on a server.
+  @* Running on a server.
