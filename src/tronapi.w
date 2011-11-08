@@ -1,33 +1,33 @@
 
-@* Introduction. This document details the implementation of an API 
-for the tron game used in CSCI-B351. More information about the 
-IU Tron game can be found at the following web address:
+@* Introduction. This document details the implementation of an API
+for the tron game used in CSCI-B351. More information about the IU
+Tron game can be found at the following web address:
 
 \medskip\verbatim
 http://www.sacrideo.us/iu-tron/
 !endverbatim\medskip
 
 \noindent 
-The tron api is focused on providing a simple but flexible interface for 
-allowing pluggable game brains or A.I.'s to play a tron game. In
-tron, two players compete against one another for space. Each player 
-drives a virtual light cycle that continuously flies inside of a virtual 
-map (2-dimensional) at a constant rate of speed. You can turn your 
-cycle left and right through the map, trying to stay alive longer than 
-your opponent. The walls are deadly, and hitting any wall or protrusion 
-results in instant death. Additionally, your light cycles are emitting 
-light that leaves a solidified trail behind, and hitting these walls, 
-either your own or the trail left by your opponent also results in 
-instant death. Don't die first! You can either win the game by being 
-alive longer than your opponent, lose by dying first, or you can 
-draw by dying at the exact same time.
+The tron api is focused on providing a simple but flexible interface
+for allowing pluggable game brains or A.I.'s to play a tron game. In
+tron, two players compete against one another for space. Each player
+drives a virtual light cycle that continuously flies inside of a
+virtual map (2-dimensional) at a constant rate of speed. You can turn
+your cycle left and right through the map, trying to stay alive longer
+than your opponent. The walls are deadly, and hitting any wall or
+protrusion results in instant death. Additionally, your light cycles
+are emitting light that leaves a solidified trail behind, and hitting
+these walls, either your own or the trail left by your opponent also
+results in instant death. Don't die first! You can either win the game
+by being alive longer than your opponent, lose by dying first, or you
+can draw by dying at the exact same time.
 
-In this library, each cycle moves in discrete lock-step fashion, 
-where the players each take a turn at the same time, moving their 
-cycle forward one step. Since the most interesting aspects of the 
-game are the actual brains that drive the cycles, this library 
-provides all of the basic functionality for creating tron brains.
-Here's a simple list of the features that are provided:
+In this library, each cycle moves in discrete lock-step fashion, where
+the players each take a turn at the same time, moving their cycle
+forward one step. Since the most interesting aspects of the game are
+the actual brains that drive the cycles, this library provides all of
+the basic functionality for creating tron brains.  Here's a simple
+list of the features that are provided:
 
 {\narrower
 \medskip
@@ -40,12 +40,12 @@ game server for each run.
 \item{3.} You can easily run your brain against a remote server 
 that you specify.\par}
 
-@ {\it Notes on terminology.} 
-To begin, let's get some basic terminology down. We say that a given 
-{\it brain} is a procedure that controls how a given tron cycle 
-moves. We say that a brain |plays| a given move, which is a direction 
-either north, south, east, or west. To move back against 
-the way that you came results in instant death, and you must make a move at every turn.
+@ {\it Notes on terminology.}  To begin, let's get some basic
+terminology down. We say that a given {\it brain} is a procedure that
+controls how a given tron cycle moves. We say that a brain |plays| a
+given move, which is a direction either north, south, east, or
+west. To move back against the way that you came results in instant
+death, and you must make a move at every turn.
 
 We will define a variable |valid-moves| here which will give you 
 the set of your valid moves.
@@ -53,18 +53,27 @@ the set of your valid moves.
 @p
 (define valid-moves '(n w s e))
 
-@ The board on which the cycles are playing is a standard 2 dimensional 
-grid that has $[0,w)$ columns and $[0,h)$ rows, where $h$ is the height 
-of the map and $w$ is the width. The origin is in the upper lefthand 
-corner. We refer to a given grid by coordinate point in the form |(x . y)| 
-where |x| is the column and |y| is the row. 
+@ The board on which the cycles are playing is a standard 2
+dimensional grid that has $[0,w)$ columns and $[0,h)$ rows, where $h$
+is the height of the map and $w$ is the width. The origin is in the
+upper lefthand corner. We refer to a given grid by coordinate point in
+the form |(x . y)| where |x| is the column and |y| is the row.
 
-@ Every game starts in the same way, there is a map, and then there 
-are starting positions for each of the players. Each player is given 
-the starting position of the other player, as well as the size of the 
-map and the list of which coordinates in the map are walls. This means 
-that both players have perfect information of the playing field when 
+The game is played on a torus board, meaning that if you go off the
+edge of the board on one side, you appear on the opposite side of the
+board going the same direction.
+
+@ Every game starts in the same way, there is a map, and then there
+are starting positions for each of the players. Each player is given
+the starting position of the other player, as well as the size of the
+map and the list of which coordinates in the map are walls. This means
+that both players have perfect information of the playing field when
 they start.
+
+Each cycle's state on the board is in the form of a location and a 
+direction. This all comes together to form the cycle's position. 
+A position is encoded as a pair of coordinate and direction or 
+|((x . y) . dir)| where |dir| is a member of |valid-moves|. 
 
 @* Creating a tron brain. To create a tron brain, we provide a 
 syntax that handles the creation of the boiler plate for you.
@@ -104,40 +113,40 @@ $$\.{proc} :
   \\{port}\to(\\{port}\times\\{state}\to\.{\#<void>})$$
 
 \noindent The value returned by the |proc| procedure is another procedure 
-which is the main brain procedure. Whenever we call this procedure, we 
-expect that the user provided code will run, and that a single play will 
-be made. We want to make sure that we accept the user state at the 
-beginning of each turn from the previous turn, and we want to provide the 
-port that we are going to use to get moves from the server. We use a port 
-here instead of passing |ppos| and |opos| directly because we need to 
-be able to work both on the remote server as well as a local one. 
-The |proc| procedures is thus in charge of doing the initial protocol 
-negotiation and getting all of the static information set up before 
-returning the brain playing procedure. The user's brain code should 
-send the next move to the server using the |play| procedure. This 
-means that the user body brain code never has to worry about things 
-like ports and the like. 
-The |play| procedure has the following signature:
+which is the main brain procedure. Whenever we call this procedure, we
+expect that the user provided code will run, and that a single play
+will be made. We want to make sure that we accept the user state at
+the beginning of each turn from the previous turn, and we want to
+provide the port that we are going to use to get moves from the
+server. We use a port here instead of passing |ppos| and |opos|
+directly because we need to be able to work both on the remote server
+as well as a local one.  The |proc| procedures is thus in charge of
+doing the initial protocol negotiation and getting all of the static
+information set up before returning the brain playing procedure. The
+user's brain code should send the next move to the server using the
+|play| procedure. This means that the user body brain code never has
+to worry about things like ports and the like.  The |play| procedure
+has the following signature:
 
 $$\.{play} : \\{move} \to \.{\#<void>}$$
 
 \noindent It may be that the player or brain needs to keep some information 
-around each time that it is called for the next time around. In order to 
-do this, simply return that state as the return value of the brain body 
-code and it will be available to you again in the |state| variable the 
-next time that the brain is called.
+around each time that it is called for the next time around. In order
+to do this, simply return that state as the return value of the brain
+body code and it will be available to you again in the |state|
+variable the next time that the brain is called.
 
-The |name| element should be an expression that evaluates into a string 
-that will be used as the name of the player on the server when reporting 
-scores and information. The |size| variable is a pair |(w . h)| containing 
-the width and height of the map. The |walls| variable will contain 
-an association list of the form |((x . y) ...)| that gives the locations 
-of each wall on the map. The variables |ppos| and |opos| both have the 
-form |(x . y)| and represent the current positions of the player and 
-opponent respectively. 
+The |name| element should be an expression that evaluates into a
+string that will be used as the name of the player on the server when
+reporting scores and information. The |size| variable is a pair 
+|(w . h)| containing the width and height of the map. The |walls|
+variable will contain an association list of the form |((x . y) ...)|
+that gives the locations of each wall on the map. The variables |ppos|
+and |opos| both have the form |(x . y)| and represent the current
+positions of the player and opponent respectively.
 
-@ Let's start by defining the actual |define-tron-brain| syntax. We 
-want to expand into something that will implement all of the above 
+@ Let's start by defining the actual |define-tron-brain| syntax. We
+want to expand into something that will implement all of the above
 semantics, though some of the work will be left until later.
 
 @p
@@ -151,8 +160,8 @@ semantics, though some of the work will be left until later.
            @<Get player and opponent positions, |ppos| and |opos|@>
            b1 b2 ...)))]))
 
-@ The |play| procedure is actually a simple closure over the |play-port|. 
-Recall the signature for the |play| procedure.
+@ The |play| procedure is actually a simple closure over the
+|play-port|.  Recall the signature for the |play| procedure.
 
 $$\.{play} : \\{move} \to \.{\#<void>}$$
 
@@ -166,11 +175,10 @@ generator.
     (format port "~s~n" move)
     (flush-output-port port)))
 
-@ As an example of using |define-tron-brain| let's make a brain 
-that randomly plays a move. Our player's name will be
-``Random move bot.'' Note that this bot very well may pick a
-move that sends it backwards, thus dieing and losing. ``Random
-move bot'' is not very smart.
+@ As an example of using |define-tron-brain| let's make a brain that
+randomly plays a move. Our player's name will be ``Random move bot.''
+Note that this bot very well may pick a move that sends it backwards,
+thus dieing and losing. ``Random move bot'' is not very smart.
 
 @p
 (define-tron-brain 
@@ -179,16 +187,17 @@ move bot'' is not very smart.
 
 @* The Tron Server Protocol.
 
-@* Playing a game. To play a game locally, without having a connection 
+@* Playing a game. To play a game locally, without having a connection
 to a server or anything like that, you use the |play-tron| procedure.
-It expects to receive two brains as defined by |define-tron-brain|. 
-It will simulate the game and show the progress of the game on the terminal. 
+It expects to receive two brains as defined by |define-tron-brain|.
+It will simulate the game and show the progress of the game on the
+terminal.
 
 $$\.{play-tron} : \\{brain1}\times\\{brain2}\to\.{\#<void>}$$
 
 \noindent The |play-tron| procedure will take care of a few steps. Firstly, 
-it needs to setup a communication layer so that the two brains can 
-communicate over the same protocol as that used by the server. 
+it needs to setup a communication layer so that the two brains can
+communicate over the same protocol as that used by the server.
 
 \medskip
 \item{1.} Setup pseudo-server.
@@ -207,8 +216,8 @@ communicate over the same protocol as that used by the server.
 		  [b2-move (b2)])
 	      (loop (update-board board b1-move b2-move))))))
 
-@ create-board takes the width, height, and a list of all the coordinates
-(row,col) where the obstacles are located. 
+@ create-board takes the width, height, and a list of all the
+coordinates (row,col) where the obstacles are located.
 
 $$\.{create-board} : \\{width}\times\\{height}\\times\\{obstacles}\to\.{\#<void>}$$
 
