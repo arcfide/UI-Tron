@@ -81,7 +81,8 @@ A position is encoded as a coordinate pair |(x . y)|.
 make a brain that randomly plays a move. Our player's name will be
 ``Random move bot.''
 
-@p
+@c () => (random-move-bot)
+@<Define random moving tron brain@>=
 (define-tron-brain (random-move-bot 
                      ("Random Move Bot" size orig-walls play ppos opos) 
                      (walls orig-walls))
@@ -203,6 +204,12 @@ $$\.{play} : \\{move}\to\.{\#<void>}$$
     (format port "~s~n" move)
     (flush-output-port port)))
 
+@ We will now insert the random brain definition into scope, since 
+we have defined the tron brain definer.
+
+@p
+@<Define random moving tron brain@>
+
 @* Playing a game. To play a game locally, without having a connection
 to a server or anything like that, you use the |play-tron| procedure.
 It expects to receive a board specification and two brains as defined
@@ -242,18 +249,6 @@ of the responses that brains make without having to recreate brains.
             [b2-play (b2 b2-play-port ip2)])
         (b1-get) (b2-get) ;; XXX: save these names for printing the winner, etc
         @<Simulate tron game@>))))
-
-@ Make a classic tron game with an empty board
-
-@p
-(define (make-starting-walls size)
-  (let ([x (car size)]
-	[y (cdr size)])
-    (append
-     (map (lambda (v) `(,v . 0)) (iota x))
-     (map (lambda (v) `(,v . ,(sub1 y))) (iota x))
-     (map (lambda (v) `(0 . ,v)) (iota y))
-     (map (lambda (v) `(,(sub1 x). ,v)) (iota y)))))              
 
 @ Given the size of a board, and the walls, detect if it is
 symmetrical across the diagonal.
@@ -363,24 +358,6 @@ players are thrown into the walls set.
 (define new-pos2 (get-pos m2 pos2 size))
 (define new-walls (cons* pos1 pos2 walls))
 
-@ We provide the |get-pos| procedure, which takes a move or direction 
-and an old position, and returns a new position assuming that we moved
-in that new direction. 
-
-$$\.{get-pos} : 
-  \\{move}\times\\{position}\times\\{size}\to\\{new-position}$$
-
-@p
-(define (get-pos m old size)
-  (let ([width (car size)] [height (cdr size)])
-    (let ([x (car old)] [y (cdr old)])
-      (case m 
-        [(n) (cons x (mod (-1+ y) height))]
-        [(w) (cons (mod (-1+ x) width) y)]
-        [(e) (cons (mod (1+ x) width) y)]
-        [(s) (cons x (mod (1+ y) height))]
-        [else (error #f "invalid move" m)]))))
-
 @ The |game-status| procedure takes the position of player1, position
 of player2, and the current list of walls. If either player position
 is the same as a wall, that player has crashed. If both players have
@@ -430,7 +407,37 @@ a draw.
 
 @* Running on a server.
 
-@* Board Utilities.
+@* Board Utilities. 
+
+@ We provide the |get-pos| procedure, which takes a move or direction 
+and an old position, and returns a new position assuming that we moved
+in that new direction. 
+
+$$\.{get-pos} : 
+  \\{move}\times\\{position}\times\\{size}\to\\{new-position}$$
+
+@p
+(define (get-pos m old size)
+  (let ([width (car size)] [height (cdr size)])
+    (let ([x (car old)] [y (cdr old)])
+      (case m 
+        [(n) (cons x (mod (-1+ y) height))]
+        [(w) (cons (mod (-1+ x) width) y)]
+        [(e) (cons (mod (1+ x) width) y)]
+        [(s) (cons x (mod (1+ y) height))]
+        [else (error #f "invalid move" m)]))))
+
+@ Make a classic tron game with an empty board
+
+@p
+(define (make-starting-walls size)
+  (let ([x (car size)]
+	[y (cdr size)])
+    (append
+     (map (lambda (v) `(,v . 0)) (iota x))
+     (map (lambda (v) `(,v . ,(sub1 y))) (iota x))
+     (map (lambda (v) `(0 . ,v)) (iota y))
+     (map (lambda (v) `(,(sub1 x). ,v)) (iota y)))))
 
 @* Quick Reference.
 
