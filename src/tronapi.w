@@ -75,7 +75,11 @@ Each cycle's state on the board is in the form of a location and a
 direction. This all comes together to form the cycle's position. 
 A position is encoded as a coordinate pair |(x . y)|. 
 
-@* Creating a tron brain. To create a tron brain, we provide a 
+@* Tron Brains.
+
+@* 2 Example brain.
+
+@* 2 Creating brains. To create a tron brain, we provide a 
 syntax that handles the creation of the boiler plate for you.
 
 \medskip\verbatim
@@ -201,23 +205,6 @@ thus dieing and losing. ``Random move bot'' is not very smart.
             (list-ref valid-moves (random (length valid-moves)))
             (list-ref safe-moves (random (length safe-moves)))))
       new-walls)))
-
-@* The Tron Server Protocol. The general process of a client making 
-a connection to the tron server can be outlined thus:
-
-{\medskip\narrower
-\item{1.} Client sends player name.
-\item{2.} Server sends the size of the map as |(w . h)|.
-\item{3.} Server sends the walls as an a list |((x . y) ...)|.
-\item{4.} Server sends the positions of the cycles, listing first the 
-player and then the opponent.
-\item{5.} Player sends move in the form of a direction.
-\item{6.} If the game is won or a draw, the server sends |win| to 
-the winner, and |loss| to the loser or |draw| to both in the case of 
-a draw.
-\item{7.} Otherwise, repeat starting at step 4.\par\medskip}
-
-\noindent {\it More information is needed here.}
 
 @* Playing a game. To play a game locally, without having a connection
 to a server or anything like that, you use the |play-tron| procedure.
@@ -410,7 +397,27 @@ states to each player.
   [(p2) (printf "Congratulations player 2, you won.")]
   [else (error #f "invalid status" status)])
 
+@* The Server Protocol. The general process of a client making 
+a connection to the tron server can be outlined thus:
+
+{\medskip\narrower
+\item{1.} Client sends player name.
+\item{2.} Server sends the size of the map as |(w . h)|.
+\item{3.} Server sends the walls as an a list |((x . y) ...)|.
+\item{4.} Server sends the positions of the cycles, listing first the 
+player and then the opponent.
+\item{5.} Player sends move in the form of a direction.
+\item{6.} If the game is won or a draw, the server sends |win| to 
+the winner, and |loss| to the loser or |draw| to both in the case of 
+a draw.
+\item{7.} Otherwise, repeat starting at step 4.\par\medskip}
+
+\noindent {\it More information is needed here.}
 
 @* Running on a server.
+
+@* Board Utilities.
+
+@* Quick Reference.
 
 @* Index.
