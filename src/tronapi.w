@@ -235,6 +235,8 @@ of the responses that brains make without having to recreate brains.
   (assert (valid-walls? walls))
   (assert (for-all valid-position? (list pos1 pos2)))
   (assert (for-all procedure? (list b1 b2)))
+
+    
   (let-values ([(b1-play-port b1-get) (open-string-output-port)]
                [(b2-play-port b2-get) (open-string-output-port)])
     (let ([ip1 (make-info-port size walls)]
@@ -243,6 +245,21 @@ of the responses that brains make without having to recreate brains.
             [b2-play (b2 b2-play-port ip2)])
         (b1-get) (b2-get) ;; XXX: save these names for printing the winner, etc
         @<Simulate tron game@>))))
+
+@ Make a classic tron game with an empty board
+
+@p
+(define (make-starting-walls size)
+  (let ([x (car size)]
+	[y (cdr size)])
+    (append
+     (map (lambda (v) `(,v . 0)) (iota x))
+     (map (lambda (v) `(,v . ,(sub1 y))) (iota x))
+     (map (lambda (v) `(0 . ,v)) (iota y))
+     (map (lambda (v) `(,(sub1 x). ,v)) (iota y)))))              
+
+@ Given the size of a board, and the walls, detect if it is
+symmetrical across the diagonal.
 
 @ Let's define some checkers for our game first.
 
