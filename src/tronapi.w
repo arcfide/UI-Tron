@@ -181,7 +181,17 @@ that gives the locations of each wall on the map. The variables |ppos|
 and |opos| both have the form |(x . y)| and represent the current
 positions of the player and opponent respectively.
 
-@ Documentation needs to be here.
+@ The macro that implements all of this is a simple |syntax-rules| macro. 
+There are a few things we do have to make sure about. Firstly, we need 
+to be careful not to use |name| in more than one place, since it could 
+be an expression and not a regular identifier. Secondly, we want to 
+make sure that we make as many things visible in the bindings of 
+our |init| expression as we can, since this makes it possible to use 
+some values like |walls| to populate the initial state. We do this 
+in the above example brain that moves randomly. We also want to 
+remember to wrap the body |b1 b2 ...| in a let-nil and not a 
+|begin| so that the user can provide definitions at the top of the 
+form if they want to.
 
 @p
 (define-syntax define-tron-brain
