@@ -79,7 +79,18 @@ at every turn.
 
 @* 2 Example brain. As an example of using |define-tron-brain| let's
 make a brain that randomly plays a move. Our player's name will be
-``Random move bot.''
+``Random move bot.'' This bot is smart enough to not run into any 
+walls if it doesn't have to. On the other hand, if it doesn't have 
+a safe move that it can make, it will choose a move to make at 
+random from among all of the possible valid moves, even though 
+it knows that none of them are safe, because you always must send 
+a move to the server, even if it is a bad one.
+
+Notice the use of |(walls orig-walls)| which sets up our state 
+to be |orig-walls| initially. On each iteration, we update 
+|walls| implicitly by returning the new value we want to be 
+held by |walls|. We use this to keep track of the trails left 
+behind by the cycles as well as the original walls.
 
 @c () => (random-move-bot)
 @<Define random moving tron brain@>=
