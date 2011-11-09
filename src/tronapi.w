@@ -41,41 +41,41 @@ game server for each run.
 \item{3.} You can easily run your brain against a remote server 
 that you specify.\par}
 
-@ {\it Notes on terminology.}  To begin, let's get some basic
-terminology down. We say that a given {\it brain} is a procedure that
-controls how a given tron cycle moves. We say that a brain |plays| a
-given move, which is a direction either north, south, east, or
-west. To move back against the way that you came results in instant
-death, and you must make a move at every turn.
+\noindent
+Every game starts in the same way, there is a map, and then there are
+starting positions for each of the players. Each player is given the
+starting position of the other player, as well as the size of the map
+and the list of which coordinates in the map are walls. This means
+that both players have perfect information of the playing field when
+they start.
 
-We will define a variable |valid-moves| here which will give you 
-the set of your valid moves.
+@ {\it The Board Representation.} The board on which the cycles are
+playing is a standard 2 dimensional grid that has $[0,w)$ columns and
+$[0,h)$ rows, where $h$ is the height of the map and $w$ is the
+width. The origin is in the upper lefthand corner. We refer to a given
+grid by coordinate point in the form |(x . y)| where |x| is the column
+and |y| is the row. The game is played on a torus board, meaning that
+if you go off the edge of the board on one side, you appear on the
+opposite side of the board going the same direction. Each cycle's
+state on the board is recorded as a coordinate in the above plane. A
+position is a pair |(x . y)| where |x| is the horizontal position of
+the cycle (or column) and |y| is the vertical (or row) position of the
+column. |x| and |y| are zero-indexed.
+
+You can move on a board in any of the major compass direction. That is, 
+you can move north, south, east, or west. You cannot move diagonally 
+in a single step. The variable |valid-moves| is a list containing 
+the valid directional moves in our symbolic representation.
 
 @p
 (define valid-moves '(n w s e))
 
-@ The board on which the cycles are playing is a standard 2
-dimensional grid that has $[0,w)$ columns and $[0,h)$ rows, where $h$
-is the height of the map and $w$ is the width. The origin is in the
-upper lefthand corner. We refer to a given grid by coordinate point in
-the form |(x . y)| where |x| is the column and |y| is the row.
-
-The game is played on a torus board, meaning that if you go off the
-edge of the board on one side, you appear on the opposite side of the
-board going the same direction.
-
-@ Every game starts in the same way, there is a map, and then there
-are starting positions for each of the players. Each player is given
-the starting position of the other player, as well as the size of the
-map and the list of which coordinates in the map are walls. This means
-that both players have perfect information of the playing field when
-they start.
-
-Each cycle's state on the board is in the form of a location and a 
-direction. This all comes together to form the cycle's position. 
-A position is encoded as a coordinate pair |(x . y)|. 
-
-@* Tron Brains.
+@* Tron Brains. To begin, let's get some basic terminology down. We
+say that a given {\it brain} is a procedure that controls how a given
+tron cycle moves. We say that a brain |plays| a given move, which is a
+direction either north, south, east, or west. To move back against the
+way that you came results in instant death, and you must make a move
+at every turn.
 
 @* 2 Example brain. As an example of using |define-tron-brain| let's
 make a brain that randomly plays a move. Our player's name will be
@@ -180,8 +180,7 @@ positions of the player and opponent respectively.
         b1 b2 ...)
      (define (proc play-port info-port)
        (write name play-port)
-       (let ([play (make-play-proc play-port)]
-             [pname name])
+       (let ([play (make-play-proc play-port)])
          (let* ([size (read info-port)] [walls (read info-port)])
            (let ([state init])
              (lambda (port)
