@@ -259,16 +259,14 @@ of the responses that brains make without having to recreate brains.
   (assert (valid-walls? walls))
   (assert (for-all valid-position? (list pos1 pos2)))
   (assert (for-all procedure? (list b1 b2)))
-
-    
   (let-values ([(b1-play-port b1-get) (open-string-output-port)]
                [(b2-play-port b2-get) (open-string-output-port)])
     (let ([ip1 (make-info-port size walls)]
           [ip2 (make-info-port size walls)])
       (let ([b1-play (b1 b1-play-port ip1)]
             [b2-play (b2 b2-play-port ip2)])
-        (b1-get) (b2-get) ;; XXX: save these names for printing the winner, etc
-        @<Simulate tron game@>))))
+        (let ([b1-name (parse-name (b1-get))] [b2-name (parse-name (b2-get))])
+          @<Simulate tron game@>)))))
 
 @ Given the size of a board, and the walls, detect if it is
 symmetrical across the diagonal.
@@ -425,6 +423,22 @@ a draw.
 
 \noindent {\it More information is needed here.}
 
+@ Let's define a procedure |parse-name| that will handle the initial 
+data that reads the name from the client. All we have to do is read 
+the name from the first line of the client and strip the trailing and 
+leading whitespace.
+
+@p
+(define (parse-name str)
+  (define first-line
+    (with-input-from-string str
+      (lambda () (get-line (current-input-port)))))
+  (define (strip lst)
+    (or (memp (lambda (x) (not (char-whitespace? x))) lst)
+        '()))
+  (list->string
+    (reverse (strip (reverse (strip (string->list first-line)))))))            
+
 @* Running on a server.
 
 @* Board Utilities. 
@@ -462,3 +476,4 @@ $$\.{get-pos} :
 @* Quick Reference.
 
 @* Index.
+making your screen super bright ....trollololol
