@@ -77,7 +77,23 @@ A position is encoded as a coordinate pair |(x . y)|.
 
 @* Tron Brains.
 
-@* 2 Example brain.
+@* 2 Example brain. As an example of using |define-tron-brain| let's
+make a brain that randomly plays a move. Our player's name will be
+``Random move bot.''
+
+@p
+(define-tron-brain (random-move-bot 
+                     ("Random Move Bot" size orig-walls play ppos opos) 
+                     (walls orig-walls))
+  (let ([new-walls (cons* ppos opos walls)])
+    (define (safe? m) 
+      (and (not (member (get-pos m ppos size) new-walls)) #t))
+    (let ([safe-moves (filter safe? valid-moves)])
+      (play 
+        (if (null? safe-moves)
+            (list-ref valid-moves (random (length valid-moves)))
+            (list-ref safe-moves (random (length safe-moves)))))
+      new-walls)))
 
 @* 2 Creating brains. To create a tron brain, we provide a 
 syntax that handles the creation of the boiler plate for you.
@@ -186,25 +202,6 @@ $$\.{play} : \\{move}\to\.{\#<void>}$$
     (assert (memq move valid-moves))
     (format port "~s~n" move)
     (flush-output-port port)))
-
-@ As an example of using |define-tron-brain| let's make a brain that
-randomly plays a move. Our player's name will be ``Random move bot.''
-Note that this bot very well may pick a move that sends it backwards,
-thus dieing and losing. ``Random move bot'' is not very smart.
-
-@p
-(define-tron-brain (random-move-bot 
-                     ("Random Move Bot" size orig-walls play ppos opos) 
-                     (walls orig-walls))
-  (let ([new-walls (cons* ppos opos walls)])
-    (define (safe? m) 
-      (and (not (member (get-pos m ppos size) new-walls)) #t))
-    (let ([safe-moves (filter safe? valid-moves)])
-      (play 
-        (if (null? safe-moves)
-            (list-ref valid-moves (random (length valid-moves)))
-            (list-ref safe-moves (random (length safe-moves)))))
-      new-walls)))
 
 @* Playing a game. To play a game locally, without having a connection
 to a server or anything like that, you use the |play-tron| procedure.
