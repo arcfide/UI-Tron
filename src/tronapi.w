@@ -1,5 +1,8 @@
+\input graphicx
+
 \def\title{TRON API (Version 1.0)}
 \def\topofcontents{\null\vfill
+  $$\includegraphics[width=6in]{logo_tron_black.eps}$$
   \centerline{\titlefont Tron API}
   \vskip 15pt
   \centerline{(Version 1.0)}
