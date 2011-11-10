@@ -1,3 +1,28 @@
+\def\title{TRON API (Version 1.0)}
+\def\topofcontents{\null\vfill
+  \centerline{\titlefont Tron API}
+  \vskip 15pt
+  \centerline{(Version 1.0)}
+  \vfill}
+\def\botofcontents{\vfill
+\noindent
+Copyright $\copyright$ 2011 Aaron W. Hsu $\.{<awhsu@@indiana.edu>}$, 
+Dustin Dannenhauer $\.{<dtdannen@@indiana.edu>}$.
+\smallskip\noindent
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+\smallskip\noindent
+THE SOFTWARE IS PROVIDED ``AS IS'' AND THE AUTHOR DISCLAIMS ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+}
+
 \font\tt = "APL385 Unicode" at 10pt
 
 @* Introduction. This document details the implementation of an API
