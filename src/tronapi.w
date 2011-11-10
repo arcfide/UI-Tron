@@ -132,6 +132,36 @@ behind by the cycles as well as the original walls.
             (list-ref safe-moves (random (length safe-moves)))))
       new-walls)))
 
+@ Here's an example of the random brain in action, using the 
+printed representation from |play-tron|, which is described 
+later. Here, the first player is represented by |⍋| and has 
+won the game, whereas the |⍣| is the crashing, smoldering 
+remains of what was player 2 (|⍋|). The dominos |⌹| are what 
+is left over from the trail of their cycles.
+
+\medskip\verbatim
+⍣ ⌹ ⌹ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+⌹ ⌹ ⍋ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+⌹ ⌹ ⌹ ∘ ∘ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+!endverbatim\medskip
+
 @* 2 Creating brains. To create a tron brain, we provide a 
 syntax that handles the creation of the boiler plate for you.
 
@@ -511,4 +541,3 @@ $$\.{get-pos} :
 @* Quick Reference.
 
 @* Index.
-making your screen super bright ....trollololol
