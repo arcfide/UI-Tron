@@ -255,7 +255,7 @@ form if they want to.
               (state init)) 
         b1 b2 ...)
      (define (proc play-port info-port)
-       (write name play-port)
+       (format play-port "~a~n" name)
        (let ([play (make-play-proc 'play play-port)])
          (let* ([size (read info-port)] [walls (read info-port)])
            (let ([state init])
@@ -330,7 +330,8 @@ of the responses that brains make without having to recreate brains.
           [ip2 (make-info-port size walls)])
       (let ([b1-play (b1 b1-play-port ip1)]
             [b2-play (b2 b2-play-port ip2)])
-        (let ([b1-name (parse-name (b1-get))] [b2-name (parse-name (b2-get))])
+        (let ([name1 (parse-name (b1-get))] [name2 (parse-name (b2-get))])
+          (printf "Name1: ~a~nName2: ~a~n" name1 name2)
           @<Simulate tron game@>)))))
 
 @ Given the size of a board, and the walls, detect if it is
@@ -367,7 +368,7 @@ this case, this means just using |write| a few times.
 We send out the the player and opponent positions and then we need 
 to get the moves back from each player. 
 
-@c (pos1 pos2 size walls b1-play b2-play b1-get b2-get)
+@c (pos1 pos2 size walls b1-play b2-play b1-get b2-get name1 name2)
 @<Simulate tron game@>=
 (let loop ([pos1 pos1] [pos2 pos2] [walls walls])
   @<Print game position@>
@@ -382,7 +383,6 @@ to get the moves back from each player.
           (let ([m1 (string->move (b1-get))]
                 [m2 (string->move (b2-get))])
             @<Get new positions and walls@>
-            @<Print game position@>
             (loop new-pos1 new-pos2 new-walls)))])))
 
 @ Position ports encode the first part of the fourth protocol stage, where 
@@ -463,12 +463,12 @@ messages for people here.
 We also want to make sure that we send the correct 
 states to each player.
 
-@c (status) 
+@c (status name1 name2) 
 @<Print game result@>=
 (case status
   [(draw) (printf "The game was a draw.~n")]
-  [(p1) (printf "Congratulations player 1, you won.")]
-  [(p2) (printf "Congratulations player 2, you won.")]
+  [(p1) (printf "~a (Player 1) has won!" name1)]
+  [(p2) (printf "~a (Player 2) has won!" name2)]
   [else (error #f "invalid status" status)])
 
 @* The Server Protocol. The general process of a client making 
