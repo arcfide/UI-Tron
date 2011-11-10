@@ -1,0 +1,33 @@
+* Improve and clarify, maybe expound on sections 1 and 2.
+* Expound and fill out section 3, which is very empty at the moment.
+* Section 6 needs revamping and fuller documentation, since this is
+  one of the most important sections.
+* There needs to be a skipping notice at the end of section 6.
+* All major top level definitions need to be indexed.
+* fair-game? procedure needs to be written, and section 11 removed. 
+  The procedure should go in the board utilities section.
+* Documentation on playing a game in section 10 is out of date.
+* Section 10 needs more and clearer documentation
+* Section 12 should talk more about the proper form of each of the 
+  inputs and needs to have better documentation and more rigorous 
+  predicates
+* There should be an index entry on various sections, including 
+  section 14 since it talks about the server protocol.
+* Section 14 lacks documentation detail
+* Section 17 needs to have an example of what the output will look 
+  like as well as more detail about unicode warnings and the like.
+* Section 17 needs code cleanup
+* Collapse the last line of section 14 code into the penultimate 
+  section.
+* Section 14 needs code refactoring
+* Section 19 has a bad formatting artifact in the code.
+* Section 10 has a badly indented list.
+* The server protocol needs to be filled out in section 21.
+* Section 22 should be detailed and justified
+* Some elements of code might be better moved under section 21.
+* Sections 24, 25, and 26 all need more discussion and notes.
+* Section 26 is badly formatted code
+* The quick reference could do with some attention
+* We are missing topical index entries
+* We should fix the problem of the ToC printing on the back of 
+  the section index.
