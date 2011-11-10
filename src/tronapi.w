@@ -226,7 +226,7 @@ form if they want to.
         b1 b2 ...)
      (define (proc play-port info-port)
        (write name play-port)
-       (let ([play (make-play-proc play-port)])
+       (let ([play (make-play-proc 'play play-port)])
          (let* ([size (read info-port)] [walls (read info-port)])
            (let ([state init])
              (lambda (port)
@@ -234,18 +234,28 @@ form if they want to.
                  (let-values ([(newstate) (let () b1 b2 ...)])
                    (set! state newstate))))))))]))
 
-@ The |play| procedure is actually a simple closure over the
-|play-port|.  Recall the signature for the |play| procedure.
+@ We use the |make-play-proc| to create our procedures that will 
+send the messages to the server. They create a |play| procedure 
+that is closed over a particular port. In this case, since this 
+is a forward or user facing procedure that we are returnning, 
+we want to do some reasonable error checking here and report 
+invalid moves that are sent to the server on the client side.
 
-$$\.{play} : \\{move}\to\.{\#<void>}$$
+$$\.{make-play-proc} : \\{name}\times\\{port}\to(\\{move}\to\.{\#<void>})$$
 
-\noindent We can then easily define |make-play-proc| as a 
-|play| procedure generator.
+\noindent 
+We use the $\\{name}$ value when reporting errors, but it is otherwise
+unnecessary for the actual computation.  We will also ensure that we
+actually flush the buffer after we send our data, because we cannot be
+sure that the port we are given will actually flush the data in the
+way that we expect. At any rate, we make sure to flush and to put a
+newline at the end of our line for completeness.
 
 @p
-(define (make-play-proc port)
+(define (make-play-proc name port)
   (lambda (move)
-    (assert (memq move valid-moves))
+    (unless (memq move valid-moves)
+      (error name "invalid move" move))
     (format port "~s~n" move)
     (flush-output-port port)))
 
