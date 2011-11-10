@@ -31,3 +31,8 @@
 * We are missing topical index entries
 * We should fix the problem of the ToC printing on the back of 
   the section index.
+* We are missing a testing suite and a set of tests for regressions
+* The server code needs to be written.
+* We are missing examples in a few places.
+* The wiki is woefully out of date and needs to be cleanup and 
+  finished.
