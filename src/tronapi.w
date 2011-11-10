@@ -538,6 +538,23 @@ $$\.{get-pos} :
      (map (lambda (v) `(0 . ,v)) (iota y))
      (map (lambda (v) `(,(sub1 x). ,v)) (iota y)))))
 
-@* Quick Reference.
+@* Quick Reference. The following is a set of quick references 
+for those who are already familiar with the Tron API, but 
+need a quick refresher of the major programming elements.
+
+\bigskip
+{\smallskip\noindent{\bf Defining brains.}
+\smallskip\verbatim
+(define-tron-brain (proc (name size walls play ppos opos) 
+                         (state init))
+  body+ ...)
+!endverbatim\bigskip}
+
+{\smallskip\noindent{\bf Playing a game.}
+\smallskip\verbatim
+(play-tron board-size board-walls 
+  player1-position player2-position
+  player1-brain    player2-brain)
+!endverbatim\par}
 
 @* Index.
