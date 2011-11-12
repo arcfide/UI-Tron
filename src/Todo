@@ -1,11 +1,7 @@
 * There should be an index entry on various sections, including 
   section 14 since it talks about the server protocol.
-* Section 17 needs to have an example of what the output will look 
-  like as well as more detail about unicode warnings and the like.
 * The server protocol needs to be filled out in section 21.
 * Section 22 should be detailed and justified
-* Sections 24, 25, and 26 all need more discussion and notes.
-* Section 26 is badly formatted code
 * The quick reference could do with some attention
 * We are missing topical index entries
 * We should fix the problem of the ToC printing on the back of 

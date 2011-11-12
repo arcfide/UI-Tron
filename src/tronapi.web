@@ -584,11 +584,18 @@ valid member of |valid-moves|.
 
 @* Running on a server.
 
-@* Board Utilities. 
+@* Board Utilities. In this section we discuss some of the useful board 
+related procedures that you may want to use in your own programs. They 
+handle things related to the display of the board and manipulating 
+or getting information about boards. 
 
-@ To track the game, it is nice if we are able to print the position 
-of the players on the board. To do this, we'll print the current game
-board out on the terminal.
+@ First up, it's nice to be able to get a less sparse representation 
+of the board for printing. The |print-board| procedure does the work 
+of printing a nice representation of the board to the current output 
+port. 
+
+$$\.{print-board} : \\{size}\times\\{walls}\times\\{position}
+   \times\\{position}\to\.{\#<void>}$$
 
 @p
 @.print-board@>
@@ -603,16 +610,35 @@ board out on the terminal.
       (ol (1+ i))))
   (newline))
 
-@ There should be some documentation here.
+@ We use Unicode APL symbols to represent each particular 
+element of the board. This means that you should have a proper, 
+unicode enabled terminal that can print these characters. We like 
+these characters because they look neat and different, and they are 
+rich enough to enable easy visual recognition during the game. Here's 
+the mapping from Symbol to meaning.
+
+$$\vbox{
+  \offinterlineskip
+  \halign{
+    \strut # \hfil & # \hfil \cr
+    {\bf Symbol} & {\bf Usage} \cr
+    \noalign{\hrule}
+    |∘| & Regular, unoccupied square \cr
+    |⌹| & Wall or cycle trail \cr
+    |⍋| & Player 1 cycle \cr
+    |⍒| & Player 2 cycle \cr
+    |⍣| & Dead cycle \cr
+  }
+}$$
 
 @c (walls i j pos1 pos2)
 @<Print representation for position@>=
 (define p (cons j i))
 (cond
   [(member p walls)
-  (if (or (equal? p pos1) (equal? p pos2))
-      (printf "⍣ ")
-      (printf "⌹ "))]
+   (if (or (equal? p pos1) (equal? p pos2))
+       (printf "⍣ ")
+       (printf "⌹ "))]
   [(equal? p pos1) (printf "⍋ ")]
   [(equal? p pos2) (printf "⍒ ")]
   [else (printf "∘ ")])
@@ -623,6 +649,10 @@ in that new direction.
 
 $$\.{get-pos} : 
   \\{move}\times\\{position}\times\\{size}\to\\{new-position}$$
+
+\noindent The |size| argument should be the size of the board. This 
+procedure is useful if you want to explore possibilities, and you can 
+see how we use it in the |random-move-bot|.
 
 @p
 @.get-pos@>
@@ -636,18 +666,27 @@ $$\.{get-pos} :
         [(s) (cons x (mod (1+ y) height))]
         [else (error #f "invalid move" m)]))))
 
-@ Make a classic tron game with an empty board
+@ All tron boards without walls are just empty torus planes. 
+It is common to want to put walls around the edges of the board 
+as a starting point. If you want to do that, then you can get 
+a list of the positions that you will need by using the 
+|make-outer-walls| procedure here.
+
+$$\.{make-outer-walls}:\\{size}\to\\{outer-walls-list}$$
+
+\noindent We don't use the most effecient implementation, but 
+it's not the worst either, and it's easy to understand.
 
 @p
-@.make-starting-walls@>
-(define (make-starting-walls size)
+@.make-outer-walls@>
+(define (make-outer-walls size)
   (let ([x (car size)]
-	[y (cdr size)])
+        [y (cdr size)])
     (append
-     (map (lambda (v) `(,v . 0)) (iota x))
-     (map (lambda (v) `(,v . ,(sub1 y))) (iota x))
-     (map (lambda (v) `(0 . ,v)) (iota y))
-     (map (lambda (v) `(,(sub1 x). ,v)) (iota y)))))
+      (map (lambda (v) `(,v . 0)) (iota x))
+      (map (lambda (v) `(,v . ,(sub1 y))) (iota x))
+      (map (lambda (v) `(0 . ,v)) (iota y))
+      (map (lambda (v) `(,(sub1 x). ,v)) (iota y)))))
 
 @ The |fair-game?| procedure is a simple utility that helps you 
 determine whether a given board you are creating is actually a fair 
