@@ -1,4 +1,3 @@
-* All major top level definitions need to be indexed.
 * fair-game? procedure needs to be written, and section 11 removed. 
   The procedure should go in the board utilities section.
 * Documentation on playing a game in section 10 is out of date.
