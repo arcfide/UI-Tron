@@ -309,22 +309,40 @@ It expects to receive a board specification and two brains as defined
 by |define-tron-brain|.  It will simulate the game and show the
 progress of the game on the terminal.
 
-$$\.{play-tron} : \\{board}\times\\{brain1}\times\\{brain2}\to\.{\#<void>}$$
+A board specification is composed of the size of the board, the 
+walls or obstacles that are there at the start of the game, and the 
+positions of the two cycles on the board. The two cycles should not be 
+on any walls already (if you want the game to go for more than zero turns) 
+and you probably want to make sure that the board you have is a fair 
+game.
 
-\noindent The |play-tron| procedure will take care of a few steps. Firstly, 
-it needs to setup a communication layer so that the two brains can
-communicate over the same protocol as that used by the server.
+The two brains that you pass should both be procedures defined using the 
+|define-tron-brain| syntax. 
 
-\medskip
-\item{1.} Setup pseudo-server.
-\item{2.} Run brains to get initialization done and get the brain thunks.
-\item{3.} Play the game.
-\item{4.} Print the result of the game.
-\medskip
+$$\.{play-tron} : 
+  \\{size}\times\\{walls}\times\\{player1-position}\times\\{player2-positions}
+    \times\\{brain1}\times\\{brain2}
+  \to\.{\#<void>}$$
 
-\noindent We use string ports to get the data from the players, since we 
-can use the getters on R6RS string ports to constantly get string values 
-of the responses that brains make without having to recreate brains.
+\noindent The |play-tron| procedure will take care of setting up a virtual 
+server loop for the brains. It uses the same server protocol as that of the 
+remote server, so the same brains will work on the local simulator as they 
+will on the remote server. Playing a game locally follows the following 
+basic operations underneath:
+
+{\medskip\narrower
+\item{1.} Setup the pseudo-server.
+\item{2.} Run brains to do the initial protocol negotation 
+          and get the brain movers back.
+\item{3.} Play the turns and print the results of each turn.
+\item{4.} Print the result of the game when the game has been won or a draw 
+          has been reached.
+\par\medskip}
+
+\noindent Internally we use string ports instead of network ports to simulate 
+the protocol of the game. We don't necessarily have a single, constant set of 
+ports to work with, as we need to create new ports each time that we make a 
+turn, which will be discussed in more detail later. 
 
 @p
 @.play-tron@>
