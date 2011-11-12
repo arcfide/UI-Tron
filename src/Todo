@@ -1,5 +1,3 @@
-* fair-game? procedure needs to be written, and section 11 removed. 
-  The procedure should go in the board utilities section.
 * Documentation on playing a game in section 10 is out of date.
 * Section 10 needs more and clearer documentation
 * Section 12 should talk more about the proper form of each of the 
@@ -30,3 +28,5 @@
 * We are missing examples in a few places.
 * The wiki is woefully out of date and needs to be cleanup and 
   finished.
+* fair-game? procedure defined in the board utilities section needs
+  to be written 

@@ -343,9 +343,6 @@ of the responses that brains make without having to recreate brains.
           (printf "Name1: ~a~nName2: ~a~n" name1 name2)
           @<Simulate tron game@>)))))
 
-@ Given the size of a board, and the walls, detect if it is
-symmetrical across the diagonal.
-
 @ Let's define some checkers for our game first.
 
 @p
@@ -582,6 +579,22 @@ $$\.{get-pos} :
      (map (lambda (v) `(,v . ,(sub1 y))) (iota x))
      (map (lambda (v) `(0 . ,v)) (iota y))
      (map (lambda (v) `(,(sub1 x). ,v)) (iota y)))))
+
+@ The |fair-game?| procedure is a simple utility that helps you 
+determine whether a given board you are creating is actually a fair 
+game for either player, or whether it actually give the edge to one 
+player or another. To do this, we are basically checking for symmetry 
+of the board along the axis perpendicular to the axis running straight 
+through both cycles.
+
+$$\.{fair-game?} : 
+  \\{size}\times\\{walls}\times\\{player1-position}\times\\{player2-position}
+  \to\.{boolean}$$
+
+@p
+@.fair-game?@>
+(define (fair-game? size walls pos1 pos2)
+  (error 'fair-game? "not implemented yet"))
 
 @* Quick Reference. The following is a set of quick references 
 for those who are already familiar with the Tron API, but 
