@@ -305,9 +305,15 @@ form if they want to.
 
 @* Playing a game. To play a game locally, without having a connection
 to a server or anything like that, you use the |play-tron| procedure.
-It expects to receive a board specification and two brains as defined
-by |define-tron-brain|.  It will simulate the game and show the
-progress of the game on the terminal.
+
+$$\.{play-tron} : 
+  \\{size}\times\\{walls}\times\\{player1-position}\times\\{player2-positions}
+    \times\\{brain1}\times\\{brain2}
+  \to\.{\#<void>}$$
+
+\noindent It expects to receive a board specification and two brains
+as defined by |define-tron-brain|.  It will simulate the game and
+show the progress of the game on the terminal.
 
 A board specification is composed of the size of the board, the 
 walls or obstacles that are there at the start of the game, and the 
@@ -319,12 +325,32 @@ game.
 The two brains that you pass should both be procedures defined using the 
 |define-tron-brain| syntax. 
 
-$$\.{play-tron} : 
-  \\{size}\times\\{walls}\times\\{player1-position}\times\\{player2-positions}
-    \times\\{brain1}\times\\{brain2}
-  \to\.{\#<void>}$$
+\noindent Here's an example of using |play-tron| together with the last bit of 
+output.
 
-\noindent The |play-tron| procedure will take care of setting up a virtual 
+\medskip\verbatim
+> (play-tron '(10 . 10) '() '(0 . 0) '(9 . 9) random-move-bot random-move-bot)
+...
+⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
+⍣ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ 
+⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ 
+⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ 
+⌹ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ∘ ⌹ ⌹ 
+⌹ ∘ ∘ ∘ ∘ ∘ ⌹ ∘ ∘ ⌹ 
+∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ⌹ 
+∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ⌹ 
+∘ ∘ ∘ ∘ ∘ ⍋ ⌹ ∘ ∘ ⌹ 
+∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+
+Random Move Bot (Player 1) has won!
+!endverbatim\medskip
+
+\noindent {\it At this point you can safely pick whatever section you want to 
+go to that interests you. The rest of this document provides more details about 
+the implementation and the protocols, as well as some useful utilities that you 
+may be interested in.}
+
+The |play-tron| procedure will take care of setting up a virtual 
 server loop for the brains. It uses the same server protocol as that of the 
 remote server, so the same brains will work on the local simulator as they 
 will on the remote server. Playing a game locally follows the following 
@@ -342,15 +368,12 @@ basic operations underneath:
 \noindent Internally we use string ports instead of network ports to simulate 
 the protocol of the game. We don't necessarily have a single, constant set of 
 ports to work with, as we need to create new ports each time that we make a 
-turn, which will be discussed in more detail later. 
+turn, which will be discussed in more detail later.
 
 @p
 @.play-tron@>
 (define (play-tron size walls pos1 pos2 b1 b2)
-  (assert (valid-size? size))
-  (assert (valid-walls? walls))
-  (assert (for-all valid-position? (list pos1 pos2)))
-  (assert (for-all procedure? (list b1 b2)))
+  @<Verify |play-tron| arguments@>
   (let-values ([(b1-play-port b1-get) (open-string-output-port)]
                [(b2-play-port b2-get) (open-string-output-port)])
     (let ([ip1 (make-info-port size walls)]
@@ -361,23 +384,47 @@ turn, which will be discussed in more detail later.
           (printf "Name1: ~a~nName2: ~a~n" name1 name2)
           @<Simulate tron game@>)))))
 
-@ Let's define some checkers for our game first.
+@ At this point it makes sense to specify what exactly we mean by things 
+like the size of the board, or the walls. A valid size should be a pair 
+|(w . h)| where $w>0$ and $h>0$. Walls should be a list of |((x . y) ...|
+where for each position, $x\in [0,w)$ and $y\in [0,h)$. This is 
+the same restriction for any valid position in the board, such as the 
+player positions.
 
 @p
 @.valid-size?@>
 (define (valid-size? size)
   (and (pair? size)
-       (integer? (car size))
-       (integer? (cdr size))))
+       (integer? (car size)) (integer? (cdr size))
+       (positive? (car size)) (positive? (cdr size))))
 @.valid-walls?@>
-(define (valid-walls? walls)
+(define (valid-walls? size walls)
   (and (list? walls)
-       (for-all pair? walls)))
+       (for-all (lambda (pos) (valid-position? size pos)) walls)))
 @.valid-position?@>
-(define (valid-position? pos)
+(define (valid-position? size pos)
   (and (pair? pos)
-       (integer? (car pos))
-       (integer? (cdr pos))))
+       (integer? (car pos)) (integer? (cdr pos))
+       (<= 0 (car pos)) (<= 0 (cdr pos))
+       (< (car pos) (car size)) (< (cdr pos) (cdr size))))
+
+@ We use the above to provide decent error messages to the user when the 
+|play-tron| procedure is given the wrong things.
+
+@c (size walls pos1 pos2 b1 b2)
+@<Verify |play-tron| arguments@>=
+(unless (valid-size? size)
+  (error 'play-tron "invalid board size" size))
+(unless (valid-walls? size walls)
+  (error 'play-tron "invalid walls list" walls))
+(unless (valid-position? size pos1)
+  (error 'play-tron "invalid cycle position" pos1))
+(unless (valid-position? size pos2)
+  (error 'play-tron "invalid cycle position" pos2))
+(unless (procedure? b1)
+  (error 'play-tron "invalid brain" b1))
+(unless (procedure? b2)
+  (error 'play-tron "invalid brain" b2))
 
 @ Because we are simulating the actual behavior of the server, we are 
 using a number of different ports, where the real server might use 
