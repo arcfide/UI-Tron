@@ -301,31 +301,6 @@ form if they want to.
                  (let-values ([(newstate) (let () b1 b2 ...)])
                    (set! state newstate))))))))]))
 
-@ We use the |make-play-proc| to create our procedures that will 
-send the messages to the server. They create a |play| procedure 
-that is closed over a particular port. In this case, since this 
-is a forward or user facing procedure that we are returnning, 
-we want to do some reasonable error checking here and report 
-invalid moves that are sent to the server on the client side.
-
-$$\.{make-play-proc} : \\{name}\times\\{port}\to(\\{move}\to\.{\#<void>})$$
-
-\noindent 
-We use the $\\{name}$ value when reporting errors, but it is otherwise
-unnecessary for the actual computation.  We will also ensure that we
-actually flush the buffer after we send our data, because we cannot be
-sure that the port we are given will actually flush the data in the
-way that we expect. At any rate, we make sure to flush and to put a
-newline at the end of our line for completeness.
-
-@p
-(define (make-play-proc name port)
-  (lambda (move)
-    (unless (memq move valid-moves)
-      (error name "invalid move" move))
-    (format port "~s~n" move)
-    (flush-output-port port)))
-
 @* Playing a game. To play a game locally, without having a connection
 to a server or anything like that, you use the |play-tron| procedure.
 It expects to receive a board specification and two brains as defined
@@ -533,7 +508,32 @@ leading whitespace.
     (or (memp (lambda (x) (not (char-whitespace? x))) lst)
         '()))
   (list->string
-    (reverse (strip (reverse (strip (string->list first-line)))))))            
+    (reverse (strip (reverse (strip (string->list first-line)))))))
+
+@ We use the |make-play-proc| to create our procedures that will 
+send the messages to the server. They create a |play| procedure 
+that is closed over a particular port. In this case, since this 
+is a forward or user facing procedure that we are returnning, 
+we want to do some reasonable error checking here and report 
+invalid moves that are sent to the server on the client side.
+
+$$\.{make-play-proc} : \\{name}\times\\{port}\to(\\{move}\to\.{\#<void>})$$
+
+\noindent 
+We use the $\\{name}$ value when reporting errors, but it is otherwise
+unnecessary for the actual computation.  We will also ensure that we
+actually flush the buffer after we send our data, because we cannot be
+sure that the port we are given will actually flush the data in the
+way that we expect. At any rate, we make sure to flush and to put a
+newline at the end of our line for completeness.
+
+@p
+(define (make-play-proc name port)
+  (lambda (move)
+    (unless (memq move valid-moves)
+      (error name "invalid move" move))
+    (format port "~s~n" move)
+    (flush-output-port port)))
 
 @* Running on a server.
 
