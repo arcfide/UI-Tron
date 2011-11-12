@@ -329,20 +329,20 @@ The two brains that you pass should both be procedures defined using the
 output.
 
 \medskip\verbatim
-> (play-tron '(10 . 10) '() '(0 . 0) '(9 . 9) random-move-bot random-move-bot)
+> (play-tron '(37 . 10) '() '(0 . 0) '(36 . 9) random-move-bot random-move-bot)
 ...
-⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-⍣ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-⌹ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ∘ ⌹ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ∘ ⌹ ∘ ∘ ⌹ 
-∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ⌹ 
-∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ⌹ 
-∘ ∘ ∘ ∘ ∘ ⍋ ⌹ ∘ ∘ ⌹ 
-∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⍒ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
+⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ⌹ 
+∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
+⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ 
+∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ 
+⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ 
+⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ 
+⌹ ⍣ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ 
+∘ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
 
-Random Move Bot (Player 1) has won!
+Random Move Bot (Player 2) has won!
 !endverbatim\medskip
 
 \noindent {\it At this point you can safely pick whatever section you want to 
@@ -383,6 +383,66 @@ turn, which will be discussed in more detail later.
         (let ([name1 (parse-name (b1-get))] [name2 (parse-name (b2-get))])
           (printf "Name1: ~a~nName2: ~a~n" name1 name2)
           @<Simulate tron game@>)))))
+
+@ Simulating the actual game loop is step 4 in the server protocol. We want 
+to print the current state of the game, and then exit if we have won. In 
+this case, we will fudge a bit on the protocol and not send the results to 
+the two players, since we don't need the results handled by the brains 
+individually. We have a simple time delay to make sure that we can actually 
+watch the game in action as it is playing. We will create new ports each 
+time to represent the player positions, rather than trying to maintain 
+one single port for each player. We should make sure that we keep track of 
+the tails of each of the cycles by adding them to the |walls| on each 
+iteration.
+
+@c (pos1 pos2 size walls b1-play b2-play b1-get b2-get name1 name2)
+@<Simulate tron game@>=
+(let loop ([pos1 pos1] [pos2 pos2] [walls walls])
+  (print-board size walls pos1 pos2)
+  (let ([status (game-status pos1 pos2 walls)])
+    (case status
+      [(draw p1 p2) @<Print game result@>]
+      [else
+        (sleep (make-time 'time-duration 250000000 0))
+        (let ([port1 (make-pos-port pos1 pos2)] 
+              [port2 (make-pos-port pos2 pos1)])
+          (b1-play port1) (b2-play port2)
+          (loop (get-pos (string->move (b1-get)) pos1 size)
+                (get-pos (string->move (b2-get)) pos2 size)
+                (cons* pos1 pos2 walls)))])))
+
+@ The |game-status| procedure takes the position of the first player, 
+the position of the second player, and the current list of walls. 
+It returns a symbol indicating the status of the game, one of 
+|draw|, |p1|, |p2|, or |not-over|. The symbols |p*| indicate that 
+the given player has one, and |draw| indicates that the game was a draw. 
+If the game is not yet finished, meaning that both cycles are still 
+alive, then the |game-status| procedure will return |not-over|.
+
+$$\.{game-status}:\\{pos1}\times\\{pos2}\times\\{walls}\to\\{status}$$
+
+@p
+@.game-status@>
+(define (game-status pos1 pos2 walls)
+  (let ([p1-dead? (member pos1 walls)]
+        [p2-dead? (member pos2 walls)])
+    (cond
+      [(and p1-dead? p2-dead?) 'draw]
+      [p1-dead? 'p2]
+      [p2-dead? 'p1]
+      [else 'not-over])))
+
+@ When the game has concluded, we want to print the results of the win. 
+The user should receive a nice message with both the player slot, 
+either first or second position, and the name of the player brain.
+
+@c (status name1 name2) 
+@<Print game result@>=
+(case status
+  [(draw) (printf "The game was a draw.~n")]
+  [(p1) (printf "~a (Player 1) has won!" name1)]
+  [(p2) (printf "~a (Player 2) has won!" name2)]
+  [else (error #f "invalid status" status)])
 
 @ At this point it makes sense to specify what exactly we mean by things 
 like the size of the board, or the walls. A valid size should be a pair 
@@ -425,129 +485,6 @@ player positions.
   (error 'play-tron "invalid brain" b1))
 (unless (procedure? b2)
   (error 'play-tron "invalid brain" b2))
-
-@ Because we are simulating the actual behavior of the server, we are 
-using a number of different ports, where the real server might use 
-only one for all of the communication. The first of these is our 
-information port. This port should contain the board size and the 
-wall information in the same format as the server will send it. In 
-this case, this means just using |write| a few times.
-
-@p
-@.make-info-port@>
-(define (make-info-port size walls)
-  (open-string-input-port
-    (format "~s~s~n" size walls)))
-
-@ The tron game proceeds from the protocol above starting at step 4. 
-We send out the the player and opponent positions and then we need 
-to get the moves back from each player. 
-
-@c (pos1 pos2 size walls b1-play b2-play b1-get b2-get name1 name2)
-@<Simulate tron game@>=
-(let loop ([pos1 pos1] [pos2 pos2] [walls walls])
-  @<Print game position@>
-  (let ([status (game-status pos1 pos2 walls)])
-    (case status
-      [(draw p1 p2) @<Print game result@>]
-      [else
-        (sleep (make-time 'time-duration 250000000 0))
-        (let ([port1 (make-pos-port pos1 pos2)]
-              [port2 (make-pos-port pos2 pos1)])
-          (b1-play port1) (b2-play port2)
-          (let ([m1 (string->move (b1-get))]
-                [m2 (string->move (b2-get))])
-            @<Get new positions and walls@>
-            (loop new-pos1 new-pos2 new-walls)))])))
-
-@ Position ports encode the first part of the fourth protocol stage, where 
-we send the player positions to each player. In this case, we assume 
-that the first argument is the first player to send, and the second argument 
-the opponent and second position to send.
-
-@p
-@.make-pos-port@>
-(define (make-pos-port p1 p2)
-  (open-string-input-port 
-    (format "~s~s~n" p1 p2)))
-
-@ The procedure |string->move| should take a single string 
-representing the play made by a player in the syntax of the 
-server protocol. That is, it should be a symbol that is a 
-valid member of |valid-moves|. 
-
-@p
-@.string->move@>
-(define (string->move str)
-  (let ([val (with-input-from-string str read)])
-    (or (and (symbol? val) (member val valid-moves) val)
-        (error #f "Not a valid move" val))))
-
-@ To track the game, it is nice if we are able to print the position 
-of the players on the board. To do this, we'll print the current game
-board out on the terminal.
-
-@c (pos1 pos2 size walls)
-@<Print game position@>=
-(let ol ([i 0])
-  (unless (= i (cdr size))
-    (let il ([j 0])
-      (unless (= j (car size))
-        (let ([p (cons j i)])
-          (cond 
-            [(member p walls)
-             (if (or (equal? p pos1) (equal? p pos2))
-                 (printf "⍣ ")
-                 (printf "⌹ "))]
-            [(equal? p pos1) (printf "⍋ ")]
-            [(equal? p pos2) (printf "⍒ ")]
-            [else (printf "∘ ")]))
-        (il (1+ j))))
-    (newline)
-    (ol (1+ i))))
-(newline)
-
-@ Once we have the moves that the players have made, we want to make 
-those positions and create the updated positions values. We also 
-want to make sure that the walls of the current positions of the 
-players are thrown into the walls set. 
-
-@c (size pos1 pos2 m1 m2 walls) => (new-pos1 new-pos2 new-walls)
-@<Get new positions and walls@>=
-(define new-pos1 (get-pos m1 pos1 size))
-(define new-pos2 (get-pos m2 pos2 size))
-(define new-walls (cons* pos1 pos2 walls))
-
-@ The |game-status| procedure takes the position of player1, position
-of player2, and the current list of walls. If either player position
-is the same as a wall, that player has crashed. If both players have
-crashed, the game is a draw. If one player has crashed then the other
-player has won. If neither player has crashed let the game continue!
-
-@p
-@.game-status@>
-(define (game-status pos1 pos2 walls)
-  (let ([p1-dead? (member pos1 walls)]
-	[p2-dead? (member pos2 walls)])
-    (cond
-     [(and p1-dead? p2-dead?) 'draw]
-     [p1-dead? 'p2]
-     [p2-dead? 'p1]
-     [else 'not-over])))
-
-@ When the game has concluded, we want to print the 
-results of the win. We will print out nice little 
-messages for people here.
-We also want to make sure that we send the correct 
-states to each player.
-
-@c (status name1 name2) 
-@<Print game result@>=
-(case status
-  [(draw) (printf "The game was a draw.~n")]
-  [(p1) (printf "~a (Player 1) has won!" name1)]
-  [(p2) (printf "~a (Player 2) has won!" name2)]
-  [else (error #f "invalid status" status)])
 
 @* The Server Protocol. The general process of a client making 
 a connection to the tron server can be outlined thus:
@@ -609,9 +546,76 @@ newline at the end of our line for completeness.
     (format port "~s~n" move)
     (flush-output-port port)))
 
+@ Because we are simulating the actual behavior of the server, we are 
+using a number of different ports, where the real server might use 
+only one for all of the communication. The first of these is our 
+information port. This port should contain the board size and the 
+wall information in the same format as the server will send it. In 
+this case, this means just using |write| a few times.
+
+@p
+@.make-info-port@>
+(define (make-info-port size walls)
+  (open-string-input-port
+    (format "~s~s~n" size walls)))
+
+@ Position ports encode the first part of the fourth protocol stage, where 
+we send the player positions to each player. In this case, we assume 
+that the first argument is the first player to send, and the second argument 
+the opponent and second position to send.
+
+@p
+@.make-pos-port@>
+(define (make-pos-port p1 p2)
+  (open-string-input-port 
+    (format "~s~s~n" p1 p2)))
+
+@ The procedure |string->move| should take a single string 
+representing the play made by a player in the syntax of the 
+server protocol. That is, it should be a symbol that is a 
+valid member of |valid-moves|. 
+
+@p
+@.string->move@>
+(define (string->move str)
+  (let ([val (with-input-from-string str read)])
+    (or (and (symbol? val) (member val valid-moves) val)
+        (error #f "Not a valid move" val))))
+
 @* Running on a server.
 
 @* Board Utilities. 
+
+@ To track the game, it is nice if we are able to print the position 
+of the players on the board. To do this, we'll print the current game
+board out on the terminal.
+
+@p
+@.print-board@>
+(define (print-board size walls pos1 pos2)
+  (let ol ([i 0])
+    (unless (= i (cdr size))
+      (let il ([j 0])
+        (unless (= j (car size))
+          @<Print representation for position@>
+          (il (1+ j))))
+      (newline)
+      (ol (1+ i))))
+  (newline))
+
+@ There should be some documentation here.
+
+@c (walls i j pos1 pos2)
+@<Print representation for position@>=
+(define p (cons j i))
+(cond
+  [(member p walls)
+  (if (or (equal? p pos1) (equal? p pos2))
+      (printf "⍣ ")
+      (printf "⌹ "))]
+  [(equal? p pos1) (printf "⍋ ")]
+  [(equal? p pos2) (printf "⍒ ")]
+  [else (printf "∘ ")])
 
 @ We provide the |get-pos| procedure, which takes a move or direction 
 and an old position, and returns a new position assuming that we moved

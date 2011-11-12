@@ -1,17 +1,9 @@
 * There should be an index entry on various sections, including 
   section 14 since it talks about the server protocol.
-* Section 14 lacks documentation detail
 * Section 17 needs to have an example of what the output will look 
   like as well as more detail about unicode warnings and the like.
-* Section 17 needs code cleanup
-* Collapse the last line of section 14 code into the penultimate 
-  section.
-* Section 14 needs code refactoring
-* Section 19 has a bad formatting artifact in the code.
-* Section 10 has a badly indented list.
 * The server protocol needs to be filled out in section 21.
 * Section 22 should be detailed and justified
-* Some elements of code might be better moved under section 21.
 * Sections 24, 25, and 26 all need more discussion and notes.
 * Section 26 is badly formatted code
 * The quick reference could do with some attention
@@ -20,7 +12,6 @@
   the section index.
 * We are missing a testing suite and a set of tests for regressions
 * The server code needs to be written.
-* We are missing examples in a few places.
 * The wiki is woefully out of date and needs to be cleanup and 
   finished.
 * fair-game? procedure defined in the board utilities section needs
