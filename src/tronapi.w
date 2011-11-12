@@ -90,27 +90,31 @@ the valid directional moves in our symbolic representation.
 @p
 (define valid-moves '(n w s e))
 
-@* Tron Brains. To begin, let's get some basic terminology down. We
-say that a given {\it brain} is a procedure that controls how a given
-tron cycle moves. We say that a brain |plays| a given move, which is a
-direction either north, south, east, or west. To move back against the
-way that you came results in instant death, and you must make a move
-at every turn.
+@* Tron Brains. To begin, let's get some basic terminology down. At
+the heart of this library is the concept of a tron {\it brain}. A
+tron brain can be thought of as the artificial intelligence that will
+drive a specific light cycle. A tron brain has one and only one job,
+to decide what the next move to make, which is really what the next
+direction should be. We use a special syntax called |define-tron-brain|
+to actually create the brains. This syntax handles all of the heavy
+lifting in the background so that the code the user (that's you)
+has to write is limited to deciding the right move to make. 
 
-@* 2 Example brain. As an example of using |define-tron-brain| let's
-make a brain that randomly plays a move. Our player's name will be
-``Random move bot.'' This bot is smart enough to not run into any 
-walls if it doesn't have to. On the other hand, if it doesn't have 
-a safe move that it can make, it will choose a move to make at 
-random from among all of the possible valid moves, even though 
-it knows that none of them are safe, because you always must send 
-a move to the server, even if it is a bad one.
-
-Notice the use of |(walls orig-walls)| which sets up our state 
-to be |orig-walls| initially. On each iteration, we update 
-|walls| implicitly by returning the new value we want to be 
-held by |walls|. We use this to keep track of the trails left 
-behind by the cycles as well as the original walls.
+Since most people like to start with an example, let's consider one.
+As an example of using |define-tron-brain| let's make a brain
+that randomly plays a move. Our brain's name will be ``Random move
+bot.'' This bot is smart enough to not run into any walls if it doesn't
+have to. On the other hand, if it doesn't have a safe move that it
+can make, it will choose a move to make at random from among all of
+the possible valid moves, even though it knows that none of them are
+safe, because you always must send a move to the server, even if it
+is a bad one.  Pay attention to our use of |(walls orig-walls)| which
+sets up our state to be |orig-walls| initially. On each iteration,
+we update |walls| implicitly by returning the new value we want to
+be held by |walls|. We use this to keep track of the trails left
+behind by the cycles as well as the original walls. We will talk
+about this more in further sections when we talk about the syntax of
+|define-tron-brain| in detail.
 
 @c () => (random-move-bot)
 @<Define random moving tron brain@>=
@@ -135,27 +139,23 @@ remains of what was player 2 (|⍋|). The dominos |⌹| are what
 is left over from the trail of their cycles.
 
 \medskip\verbatim
-⍣ ⌹ ⌹ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-⌹ ⌹ ⍋ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
-⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-⌹ ⌹ ⌹ ∘ ∘ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-!endverbatim\medskip
+                   ⍣ ⌹ ⌹ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ⍋ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                   ⌹ ⌹ ⌹ ∘ ∘ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+!endverbatim
 
 @* 2 Creating brains. To create a tron brain, we provide a 
 syntax that handles the creation of the boiler plate for you.
