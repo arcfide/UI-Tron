@@ -116,8 +116,8 @@ behind by the cycles as well as the original walls. We will talk
 about this more in further sections when we talk about the syntax of
 |define-tron-brain| in detail.
 
-@c () => (random-move-bot)
-@<Define random moving tron brain@>=
+@p
+@<Define |define-tron-brain|@>
 (define-tron-brain (random-move-bot 
                      ("Random Move Bot" size orig-walls play ppos opos) 
                      (walls orig-walls))
@@ -157,8 +157,8 @@ is left over from the trail of their cycles.
                    ⌹ ⌹ ⌹ ∘ ∘ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
 !endverbatim
 
-@* 2 Creating brains. To create a tron brain, we provide a 
-syntax that handles the creation of the boiler plate for you.
+@* 2 Creating brains. The syntax for defining a tron brain is as 
+follows:
 
 \medskip\verbatim
 (define-tron-brain (proc (name size walls play ppos opos) 
@@ -166,7 +166,20 @@ syntax that handles the creation of the boiler plate for you.
   body+ ...)
 !endverbatim\medskip
 
-\noindent Here is a short synopsis of the above identifiers:
+\noindent Now, there are quite a few identifiers there, so it's helpful 
+to start with what the user would normally write. Basically, the 
+|body+ ...| code is the code that will actually be run each time that 
+a brain is needed to get a specific move for a cycle. That is, if we are 
+simulating a game locally using |play-tron| (discussed later), then 
+every time we need to know what the next move is going to be, the 
+|play-tron| procedure will evaluate the |body+ ...| code. That |body+ ...|
+code had better send the next move to the server setup by |play-tron|.
+
+The |define-tron-brain| syntax provides a lot of assistant to the user 
+so that most of the information that one would need to decide what move 
+to make next is readily available. Let's start with a short synopsis 
+of what each of the identifiers in the |define-tron-brain| syntax will 
+be when we run the |body+ ...| code.
 
 $$\vbox{
   \offinterlineskip
@@ -179,7 +192,7 @@ $$\vbox{
     $\\{state}$ & Variable to hold user provided state \cr
     $\\{init}$  & Initial state expression \cr
     $\\{size}$  & Holds the size of the map \cr
-    $\\{walls}$ & Alist of coordinates for walls \cr
+    $\\{walls}$ & List of coordinates for walls \cr
     $\\{ppos}$  & Player position \cr
     $\\{opos}$  & Opponent position \cr
     $\\{play}$  & Procedure to play move \cr
@@ -187,8 +200,53 @@ $$\vbox{
   }
 }$$
 
+\noindent The |name| element should be an expression that evaluates into a
+string that will be used as the name of the player on the server when
+reporting scores and information. The |size| variable is a pair 
+|(w . h)| containing the width and height of the map. The |walls|
+variable will contain a list of the form |((x . y) ...)|
+that gives the locations of each wall on the map. The variables |ppos|
+and |opos| both have the form |(x . y)| and represent the current
+positions of the player and opponent respectively.
 
-\noindent The above form binds |proc| to a procedure that can be used 
+The |proc| identifier that you give will be the only definition that 
+is actually visible outside of the |body+ ...| code. It will be bound to 
+a procedure that represents the brain you have just defined. When we talk 
+about the main brain procedures or objects we are talking about the procedures 
+|proc| that are defined by |define-tron-brain|. You need to make sure that
+any simulator that you use such as |play-tron| that needs a brain is given 
+one or more of these procedures. You can read more about |play-tron| further 
+down to know exactly what it expects to be given when you run it.
+
+We haven't yet talked about |play|. This is an interesting one. Specifically, 
+|play| is a procedure that is visible in |body+ ...| that you use to send a 
+move to the server. That is, if you want to send a move such as north to 
+the server, you don't need to do anything fancy: all you do is evaluate 
+something like |(play 'n)| before the end of |body+ ...| and you will be 
+done. You should be careful to only call |play| once for each invokation of 
+your brain. You shouldn't send move than one move at a time to the server.
+The |play| procedure has the following signature:
+
+$$\.{play} : \\{move}\to\.{\#<void>}$$
+
+\noindent Now let's talk about the state.  It may be that the
+brain needs to keep some information around each time that it is
+called, such as a history of the moves that have already been made.
+To facilitate this, we allow the user to specify a variable |state|
+that will be initialized to the value of the |init| expression,
+which is evaluated once for that value. Then, on each invokation of
+the brain mover, when we evaluate the |body+ ...| code, we will take
+the value returned by the |body+ ...| code and bind it to the |state|
+variable, replacing the previous state. This means that the next time
+the brain mover (an internal element of the implementation of a brain
+that you don't have to worry about) is called, it will know what it
+returned last time. As you saw in the example, this can be used to
+keep track of the changing board state, and other interesting things.
+
+{\it\medskip\noindent At this point, if you do not care to see how 
+we implement this macro, you can skip to the next titled section.}
+
+@ The |define-tron-brain| form binds |proc| to a procedure that can be used 
 to initialize a simulation.  The |proc| name will be bound to a
 procedure that expects to receive two arguments, which are ports,
 that allow it to communicate its moves to the driver, either locally
@@ -196,42 +254,25 @@ or remotely.
 
 $$\.{proc} : 
   \\{play-port}\times\\{info-port}
-  \to(\\{port}\times\\{state}\to\.{\#<void>})$$
+  \to(\\{port}\to\.{\#<void>})$$
 
-\noindent The value returned by the |proc| procedure is another procedure 
-which is the main brain procedure. Whenever we call this procedure, we
-expect that the user provided code will run, and that a single play
-will be made. We want to make sure that we accept the user state at
-the beginning of each turn from the previous turn, and we want to
-provide the port that we are going to use to get moves from the
-server. We use a port here instead of passing |ppos| and |opos|
-directly because we need to be able to work both on the remote server
-as well as a local one.  The |proc| procedure is thus in charge of
-doing the initial protocol negotiation and getting all of the static
-information set up before returning the brain playing procedure. The
-user's brain code should send the next move to the server using the
-|play| procedure. This means that the user body brain code never has
-to worry about things like ports and the like.  The |play| procedure
-has the following signature:
+\noindent The value returned by the |proc| procedure is another
+procedure which is the main brain procedure. Whenever we call this
+procedure, we expect that the user provided code will run, and that
+a single play will be made and sent to the server. This procedure
+handles the state itself, and so the state is not a part of the
+visible interface, hence the $\.{\#<void>}$ return and the single
+port argument.  The port argument should allow us to get the player
+positions from the
+@q XXX: A server protocol index entry should go here.
+server (see the server protocol section for more details on this).
+We use a port here instead of passing |ppos| and |opos| directly
+because we need to be able to use the same brain on the remote
+server as well as a local one.  The |proc| procedure does the initial
+protocol negotiation and gets all of the static information set up
+before returning the brain move making procedure.  
 
-$$\.{play} : \\{move}\to\.{\#<void>}$$
-
-\noindent It may be that the player or brain needs to keep some information 
-around each time that it is called for the next time around. In order
-to do this, simply return that state as the return value of the brain
-body code and it will be available to you again in the |state|
-variable the next time that the brain is called.
-
-The |name| element should be an expression that evaluates into a
-string that will be used as the name of the player on the server when
-reporting scores and information. The |size| variable is a pair 
-|(w . h)| containing the width and height of the map. The |walls|
-variable will contain an association list of the form |((x . y) ...)|
-that gives the locations of each wall on the map. The variables |ppos|
-and |opos| both have the form |(x . y)| and represent the current
-positions of the player and opponent respectively.
-
-@ The macro that implements all of this is a simple |syntax-rules| macro. 
+The macro that implements all of this is a simple |syntax-rules| macro. 
 There are a few things we do have to make sure about. Firstly, we need 
 to be careful not to use |name| in more than one place, since it could 
 be an expression and not a regular identifier. Secondly, we want to 
@@ -243,7 +284,8 @@ remember to wrap the body |b1 b2 ...| in a let-nil and not a
 |begin| so that the user can provide definitions at the top of the 
 form if they want to.
 
-@p
+@c () => (define-tron-brain)
+@<Define |define-tron-brain|@>=
 (define-syntax define-tron-brain
   (syntax-rules ()
     [(k (proc (name size walls play ppos opos) 
@@ -283,12 +325,6 @@ newline at the end of our line for completeness.
       (error name "invalid move" move))
     (format port "~s~n" move)
     (flush-output-port port)))
-
-@ We will now insert the random brain definition into scope, since 
-we have defined the tron brain definer.
-
-@p
-@<Define random moving tron brain@>
 
 @* Playing a game. To play a game locally, without having a connection
 to a server or anything like that, you use the |play-tron| procedure.
