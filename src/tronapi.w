@@ -28,28 +28,21 @@ PERFORMANCE OF THIS SOFTWARE.
 
 \font\tt = "APL385 Unicode" at 10pt
 
-@* Introduction. This document details the implementation of an API
-for the tron game used in CSCI-B351. More information about the IU
-Tron game can be found at the following web address:
-
-\medskip\verbatim
-http://www.sacrideo.us/iu-tron/
-!endverbatim\medskip
-
-\noindent 
-The tron api is focused on providing a simple but flexible interface
-for allowing pluggable game brains or A.I.'s to play a tron game. In
-tron, two players compete against one another for space. Each player
-drives a virtual light cycle that continuously flies inside of a
-virtual map (2-dimensional) at a constant rate of speed. You can turn
-your cycle left and right through the map, trying to stay alive longer
-than your opponent. The walls are deadly, and hitting any wall or
-protrusion results in instant death. Additionally, your light cycles
-are emitting light that leaves a solidified trail behind, and hitting
-these walls, either your own or the trail left by your opponent also
-results in instant death. Don't die first! You can either win the game
-by being alive longer than your opponent, lose by dying first, or you
-can draw by dying at the exact same time.
+@* Introduction. This document details the implementation of an
+API for the tron game used in CSCI-B351. The tron api is focused on
+providing a simple but flexible interface for allowing pluggable game
+brains or A.I.'s to play a tron game. In tron, two players compete
+against one another for space. Each player drives a virtual light
+cycle that continuously flies inside of a virtual map (2-dimensional)
+at a constant rate of speed. You can turn your cycle left and right
+through the map, trying to stay alive longer than your opponent. The
+walls are deadly, and hitting any wall or protrusion results in
+instant death. Additionally, your light cycles are emitting light
+that leaves a solidified trail behind, and hitting these walls,
+either your own or the trail left by your opponent also results in
+instant death. Don't die first! You can either win the game by being
+alive longer than your opponent, lose by dying first, or you can draw
+by dying at the exact same time.
 
 In this library, each cycle moves in discrete lock-step fashion, where
 the players each take a turn at the same time, moving their cycle
@@ -58,8 +51,7 @@ the actual brains that drive the cycles, this library provides all of
 the basic functionality for creating tron brains.  Here's a simple
 list of the features that are provided:
 
-{\narrower
-\medskip
+{\narrower\medskip
 \item{1.} You can define brains that handle the server protocol 
 transparently, and use them both locally on your own machine 
 and remotely to play on the server.
@@ -67,7 +59,7 @@ and remotely to play on the server.
 you can test your brains offline without having to connect to the 
 game server for each run.
 \item{3.} You can easily run your brain against a remote server 
-that you specify.\par}
+that you specify.\par\medskip}
 
 \noindent
 Every game starts in the same way, there is a map, and then there are
@@ -88,7 +80,7 @@ opposite side of the board going the same direction. Each cycle's
 state on the board is recorded as a coordinate in the above plane. A
 position is a pair |(x . y)| where |x| is the horizontal position of
 the cycle (or column) and |y| is the vertical (or row) position of the
-column. |x| and |y| are zero-indexed.
+column. The indexes |x| and |y| are zero-indexed.
 
 You can move on a board in any of the major compass direction. That is, 
 you can move north, south, east, or west. You cannot move diagonally 
