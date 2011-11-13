@@ -1,7 +1,6 @@
 * The server protocol needs to be filled out in section 21.
 * Section 22 should be detailed and justified
 * The quick reference could do with some attention
-* We are missing topical index entries
 * We should fix the problem of the ToC printing on the back of 
   the section index.
 * We are missing a testing suite and a set of tests for regressions
