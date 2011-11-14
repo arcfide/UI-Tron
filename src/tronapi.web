@@ -766,14 +766,17 @@ for those who are already familiar with the Tron API, but
 need a quick refresher of the major programming elements.
 
 \bigskip
-{\smallskip\noindent{\bf Defining brains.}
+{\smallskip\noindent{\bf Defining brains.} Used for creating 
+brain procedures that are passed to |play-tron|. 
 \smallskip\verbatim
 (define-tron-brain (proc (name size walls play ppos opos) 
                          (state init))
   body+ ...)
 !endverbatim\bigskip}
 
-{\smallskip\noindent{\bf Playing a game.}
+{\smallskip\noindent{\bf Playing a game.} Used to simulate two 
+brains playing against each other on the server, but locally instead. 
+Does not require server connection.
 \smallskip\verbatim
 (play-tron board-size board-walls 
   player1-position player2-position
