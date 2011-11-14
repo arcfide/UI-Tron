@@ -612,7 +612,23 @@ valid member of |valid-moves|.
     (or (and (symbol? val) (member val valid-moves) val)
         (error #f "Not a valid move" val))))
 
-@* Running on a server.
+@* Running on a server. In this version, we do not yet have support 
+for making a connection to the remote server, but the general API 
+design has been completed. When connecting to a remote server, all
+you need is a remote server, which is basically a server name and 
+a port number, together with the brain that you want to use.
+
+$$\.{play-remote-tron} 
+  : \\{host}\times\\{port}\times\\{brain}\to\.{\#<void>}
+
+\noindent The |play-remote-tron| procedure should not return any
+specific value, but it should print something out when the game has 
+either been lost, won, or drawn. In the current design for the 
+protocol, you have no control over who you play.
+
+@p
+(define (play-remote-tron host port brain)
+  (error 'play-remote-tron "remote play not implemented"))
 
 @* Board Utilities. In this section we discuss some of the useful board 
 related procedures that you may want to use in your own programs. They 
