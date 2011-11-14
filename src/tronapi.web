@@ -71,7 +71,18 @@ starting positions for each of the players. Each player is given the
 starting position of the other player, as well as the size of the map
 and the list of which coordinates in the map are walls. This means
 that both players have perfect information of the playing field when
-they start.
+they start. Namely, the player will have the following information 
+available during each turn:
+
+{\medskip\narrower\parindent=0.3in
+\item{$\\{size}$} The size of the map.
+\item{$\\{walls}$} The walls and obstacles of on the starting map.
+\item{$\\{pos}$} The locations of the two cycles on the map.
+\par\medskip}
+
+\noindent In addition to this basic information, the |define-tron-brain| 
+form lets the user maintain arbitrary state over time so that 
+additional information that the user provides is available on each turn.
 
 @ {\it The Board Representation.} The board on which the cycles are
 playing is a standard 2 dimensional grid that has $[0,w)$ columns and
@@ -236,7 +247,7 @@ move to the server. That is, if you want to send a move such as north to
 the server, you don't need to do anything fancy: all you do is evaluate 
 something like |(play 'n)| before the end of |body+ ...| and you will be 
 done. You should be careful to only call |play| once for each invokation of 
-your brain. You shouldn't send move than one move at a time to the server.
+your brain. You shouldn't send more than one move at a time to the server.
 The |play| procedure has the following signature:@.play@>
 
 $$\.{play} : \\{move}\to\.{\#<void>}$$
