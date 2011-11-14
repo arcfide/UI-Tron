@@ -619,7 +619,7 @@ you need is a remote server, which is basically a server name and
 a port number, together with the brain that you want to use.
 
 $$\.{play-remote-tron} 
-  : \\{host}\times\\{port}\times\\{brain}\to\.{\#<void>}
+  : \\{host}\times\\{port}\times\\{brain}\to\.{\#<void>}$$
 
 \noindent The |play-remote-tron| procedure should not return any
 specific value, but it should print something out when the game has 
