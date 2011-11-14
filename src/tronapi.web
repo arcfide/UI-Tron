@@ -531,7 +531,17 @@ the winner, and |loss| to the loser or |draw| to both in the case of
 a draw.
 \item{7.} Otherwise, repeat starting at step 4.\par\medskip}
 
-\noindent {\it More information is needed here.}
+\noindent In the first step, the player name should be sent as a single 
+line with an end of line terminator. There is no special syntax here, 
+so any characters are reasonably allowed, though not all clients may be 
+able to support this. 
+The size of the map is actually a Scheme datum, and will be treated as 
+such. This holds true for the walls list as well as the positions of 
+the cycles. 
+The moves that are sent should all be symbols from the set |valid-moves|. 
+
+It should be noted that there is very little information to deal with 
+error situations right now.
 
 @ Let's define a procedure |parse-name| that will handle the initial 
 data that reads the name from the client. All we have to do is read 
@@ -576,7 +586,8 @@ newline at the end of our line for completeness.
     (format port "~s~n" move)
     (flush-output-port port)))
 
-@ Because we are simulating the actual behavior of the server, we are 
+@ In the simulation of a tron game, 
+because we are simulating the actual behavior of the server, we use 
 using a number of different ports, where the real server might use 
 only one for all of the communication. The first of these is our 
 information port. This port should contain the board size and the 
