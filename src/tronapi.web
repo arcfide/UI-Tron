@@ -84,6 +84,13 @@ available during each turn:
 form lets the user maintain arbitrary state over time so that 
 additional information that the user provides is available on each turn.
 
+For those who wish to see how to use the main bindings of this 
+library, |define-tron-brain| and |play-tron|, you can read through 
+page 7. The rest of the document is available for those who wish to 
+understand the entire source code. Users may also be interested in 
+the {\bf Board Utilities} section, which provides some useful 
+procedures for working with the boards.
+
 @ {\it The Board Representation.} The board on which the cycles are
 playing is a standard 2 dimensional grid that has $[0,w)$ columns and
 $[0,h)$ rows, where $h$ is the height of the map and $w$ is the
