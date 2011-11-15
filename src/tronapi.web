@@ -26,7 +26,21 @@ TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 }
 
+\font\titlefont = "STIXGeneral" at 17pt
+\font\ttitlefont = "APL385 Unicode" at 17pt
 \font\tt = "APL385 Unicode" at 10pt
+\font\rm = "STIXGeneral" at 10pt
+\font\bf = "STIXGeneral/B" at 10pt
+\font\it = "STIXGeneral/I" at 10pt
+\font\ninerm = "STIXGeneral" at 9pt
+\font\eightrm = "STIXGeneral" at 8pt
+\font\tenrm = "STIXGeneral" at 10pt
+\font\tentex = "APL385 Unicode" at 10pt
+\fontdimen7\tentex=0pt
+\let\mainfont=\tenrm
+\let\cmntfont\tenrm
+
+\rm
 
 @* Introduction. This document details the implementation of an
 API for the tron game used in CSCI-B351. The tron api is focused on
@@ -167,28 +181,22 @@ is left over from the trail of their cycles.
 @^Example@>
 
 \medskip\verbatim
-
-		⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-		⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ⌹ ⌹ ⍣ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⍋ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-		⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-
+                ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
+                ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                ⌹ ∘ ⌹ ⌹ ⍣ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                ⌹ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⍋ ∘ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
+                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
+                ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
 !endverbatim
 
 @* 2 Creating brains. The syntax for defining a tron brain is as 
@@ -347,14 +355,12 @@ $$\.{play-tron} :
 
 \noindent It expects to receive a board specification and two brains
 as defined by |define-tron-brain|.  It will simulate the game and
-show the progress of the game on the terminal.
-
-A board specification is composed of the size of the board, the 
-walls or obstacles that are there at the start of the game, and the 
-positions of the two cycles on the board. The two cycles should not be 
-on any walls already (if you want the game to go for more than zero turns) 
-and you probably want to make sure that the board you have is a fair 
-game.
+show the progress of the game on the terminal. A board specification
+is composed of the size of the board, the walls or obstacles that are
+there at the start of the game, and the positions of the two cycles
+on the board. The two cycles should not be on any walls already (if
+you want the game to go for more than zero turns) and you probably
+want to make sure that the board you have is a fair game.
 
 The two brains that you pass should both be procedures defined using the 
 |define-tron-brain| syntax. 
@@ -363,7 +369,8 @@ The two brains that you pass should both be procedures defined using the
 output.@^Examples@>
 
 \medskip\verbatim
-> (play-tron '(37 . 10) (make-outer-walls '(37 . 10)) '(1 . 1) '(35 . 8) random-move-bot random-move-bot)
+> (play-tron '(37 . 10) (make-outer-walls '(37 . 10)) 
+             '(1 . 1) '(35 . 8) random-move-bot random-move-bot)
 ...
 ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
 ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ⌹ 
@@ -376,7 +383,7 @@ output.@^Examples@>
 ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ 
 ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
 
-Random Move Bot (Player 1) has won!
+Random Move Bot (Player 1) has won!!
 !endverbatim\medskip
 
 \noindent {\it At this point you can safely pick whatever section you want to 
