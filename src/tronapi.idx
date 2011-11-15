@@ -1,0 +1,62 @@
+\I {Board encoding}, 2.
+\I {Board notation}, 2.
+\I {Example}, 4.
+\I {Examples}, 7.
+\I {Lightcycle speed}, 1.
+\I {Objective of Tron}, 1.
+\I {Torus}, 2.
+\I {Unicode}, 22.
+\I\\{b1}, 12.
+\I\\{b1-get}, 8.
+\I\\{b1-play}, 8.
+\I\\{b2}, 12.
+\I\\{b2-get}, 8.
+\I\\{b2-play}, 8.
+\I {board size}, 5.
+\I {board symmetry}, 25.
+\I {board verifiers}, 11.
+\I {brains}, 1.
+\I {brains defined}, 3.
+\I {compass moves}, 2.
+\I\\{define-tron-brain}, 6.
+\I\.{define-tron-brain}, 3, 5, 6.
+\I {dense board representation}, 21.
+\I {direction}, 2.
+\I {error messages}, 12.
+\I\.{fair-game?}, 25.
+\I {game result}, 10.
+\I\.{game-status}, 9.
+\I\.{get-pos}, 23.
+\I {lock-step}, 1.
+\I\.{make-info-port}, 16.
+\I\.{make-outer-walls}, 24.
+\I\.{make-play-proc}, 15.
+\I\.{make-pos-port}, 17.
+\I {moves}, 2.
+\I\\{name1}, 8, 10.
+\I\\{name2}, 8, 10.
+\I {notation}, 22.
+\I\.{parse-name}, 14.
+\I\.{play}, 5.
+\I\.{play-tron}, 5, 7.
+\I {ports}, 7, 15, 16, 17.
+\I\\{pos1}, 8, 12, 22.
+\I\\{pos2}, 8, 12, 22.
+\I {positions}, 5.
+\I\.{print-board}, 21.
+\I\.{random-move-bot}, 3, 23.
+\I {server protocol}, 6, 7, 8, 13.
+\I\\{size}, 8, 12.
+\I {sparse matrices}, 21.
+\I {state}, 3.
+\I\.{state}, 5.
+\I\\{status}, 10.
+\I\.{string->move}, 18.
+\I {torus}, 24.
+\I {turn ordering}, 1.
+\I\.{valid-moves}, 2.
+\I\.{valid-position?}, 11.
+\I\.{valid-size?}, 11.
+\I\.{valid-walls?}, 11.
+\I\\{walls}, 8, 12, 22.
+\I {walls}, 5.
