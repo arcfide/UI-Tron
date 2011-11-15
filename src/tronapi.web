@@ -119,7 +119,7 @@ the valid directional moves in our symbolic representation.
 the heart of this library is the concept of a tron {\it brain}. A
 tron brain can be thought of as the artificial intelligence that will
 drive a specific light cycle. A tron brain has one and only one job,
-to decide the next move to make, which is really what the next
+to decide what the next move to make, which is really what the next
 direction should be. We use a special syntax called |define-tron-brain|
 to actually create the brains. This syntax handles all of the heavy
 lifting in the background so that the code the user (that's you)
@@ -167,28 +167,22 @@ is left over from the trail of their cycles.
 @^Example@>
 
 \medskip\verbatim
-
-		⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-		⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ⌹ ⌹ ⍣ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⍋ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-		⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-		⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-
+                   ⍣ ⌹ ⌹ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ⍋ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+                   ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
+                   ⌹ ⌹ ⌹ ∘ ∘ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
 !endverbatim
 
 @* 2 Creating brains. The syntax for defining a tron brain is as 
@@ -259,7 +253,7 @@ We haven't yet talked about |play|. This is an interesting one. Specifically,
 move to the server. That is, if you want to send a move such as north to 
 the server, you don't need to do anything fancy: all you do is evaluate 
 something like |(play 'n)| before the end of |body+ ...| and you will be 
-done. You should be careful to only call |play| once for each invocation of 
+done. You should be careful to only call |play| once for each invokation of 
 your brain. You shouldn't send more than one move at a time to the server.
 The |play| procedure has the following signature:@.play@>
 
@@ -270,7 +264,7 @@ brain needs to keep some information around each time that it is
 called, such as a history of the moves that have already been made.
 To facilitate this, we allow the user to specify a variable |state|
 that will be initialized to the value of the |init| expression,
-which is evaluated once for that value. Then, on each invocation of
+which is evaluated once for that value. Then, on each invokation of
 the brain mover, when we evaluate the |body+ ...| code, we will take
 the value returned by the |body+ ...| code and bind it to the |state|
 variable, replacing the previous state. This means that the next time
@@ -363,20 +357,20 @@ The two brains that you pass should both be procedures defined using the
 output.@^Examples@>
 
 \medskip\verbatim
-> (play-tron '(37 . 10) (make-outer-walls '(37 . 10)) '(1 . 1) '(35 . 8) random-move-bot random-move-bot)
+> (play-tron '(37 . 10) '() '(0 . 0) '(36 . 9) random-move-bot random-move-bot)
 ...
-⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ⌹ 
-⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ⌹ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⍣ ⌹ ⌹ ⌹ ⌹ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ⍋ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ∘ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ 
-⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
+⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⍒ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ 
+⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
+⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ⌹ 
+∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
+⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ 
+∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ 
+⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ 
+⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ 
+⌹ ⍣ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ 
+∘ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
 
-Random Move Bot (Player 1) has won!
+Random Move Bot (Player 2) has won!
 !endverbatim\medskip
 
 \noindent {\it At this point you can safely pick whatever section you want to 
