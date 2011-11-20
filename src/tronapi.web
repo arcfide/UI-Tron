@@ -469,10 +469,10 @@ $$\.{game-status}:\\{pos1}\times\\{pos2}\times\\{walls}\to\\{status}$$
   (let ([p1-dead? (member pos1 walls)]
         [p2-dead? (member pos2 walls)])
     (cond
-      [(and p1-dead? p2-dead?) 'draw]
-      [p1-dead? 'p2]
-      [p2-dead? 'p1]
-      [else 'not-over])))
+     [(or (equal? pos1 pos2) (and p1-dead? p2-dead?)) 'draw]
+     [p1-dead? 'p2]
+     [p2-dead? 'p1]
+     [else 'not-over])))
 
 @ When the game has concluded, we want to print the results of the win. 
 The user should receive a nice message with both the player slot, 
@@ -701,17 +701,39 @@ $$\vbox{
   }
 }$$
 
+@ By default the game will be displayed using ascii characters.
+However, should you want to use the nicer apl font, simply run:
+|use-apl-font|. If you would like to switch back to the default
+font, simply run: |use-ascii-font|.
+
+@p
+(define apl-font? #f)
+@.apl-font?@>
+
+@p
+(define (use-apl-font)
+  (set! apl-font? #t))
+@.use-apl-font@>
+
+@p
+(define (use-ascii-font)
+  (set! apl-font? #f))
+@.use-ascii-font@>
+
 @c (walls i j pos1 pos2)
 @<Print representation for position@>=
 (define p (cons j i))
-(cond
-  [(member p walls)
-   (if (or (equal? p pos1) (equal? p pos2))
-       (printf "⍣ ")
-       (printf "⌹ "))]
-  [(equal? p pos1) (printf "⍋ ")]
-  [(equal? p pos2) (printf "⍒ ")]
-  [else (printf "∘ ")])
+(let ([chars (if apl-font?
+		 (vector "⍣ " "⌹ " "⍋ " "⍒ " "∘ ")
+		 (vector "* " "# " "1 " "2 " "- "))])
+  (cond
+   [(member p walls)
+    (if (or (equal? p pos1) (equal? p pos2))
+	(printf (vector-ref chars 0))
+	(printf (vector-ref chars 1)))]
+   [(equal? p pos1) (printf (vector-ref chars 2))]
+   [(equal? p pos2) (printf (vector-ref chars 3))]
+   [else (printf (vector-ref chars 4))]))
 
 @ We provide the |get-pos| procedure, which takes a move or direction 
 and an old position, and returns a new position assuming that we moved
