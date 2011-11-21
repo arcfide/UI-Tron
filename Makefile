@@ -7,3 +7,10 @@ release:
 	tar cvJf tron-${VERSION}.tar.xz tron-${VERSION}
 	mv tron-${VERSION}.tar.xz releases/
 	rm -r tron-${VERSION}
+
+apirelease:
+	mkdir tronapi-${VERSION}
+	cp src/tronapi.ss src/tronapi.pdf tronapi-${VERSION}
+	tar cvJf tronapi-${VERSION}.tar.xz tronapi-${VERSION}
+	mv tronapi-${VERSION}.tar.xz releases
+	rm -r tronapi-${VERSION}
