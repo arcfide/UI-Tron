@@ -469,10 +469,10 @@ $$\.{game-status}:\\{pos1}\times\\{pos2}\times\\{walls}\to\\{status}$$
   (let ([p1-dead? (member pos1 walls)]
         [p2-dead? (member pos2 walls)])
     (cond
-     [(or (equal? pos1 pos2) (and p1-dead? p2-dead?)) 'draw]
-     [p1-dead? 'p2]
-     [p2-dead? 'p1]
-     [else 'not-over])))
+      [(or (equal? pos1 pos2) (and p1-dead? p2-dead?)) 'draw]
+      [p1-dead? 'p2]
+      [p2-dead? 'p1]
+      [else 'not-over])))
 
 @ When the game has concluded, we want to print the results of the win. 
 The user should receive a nice message with both the player slot, 
