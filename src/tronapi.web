@@ -177,7 +177,7 @@ printed representation from |play-tron|, which is described
 later. Here, the first player is represented by |⍋| and has 
 won the game, whereas the |⍣| is the crashing, smoldering 
 remains of what was player 2 (|⍋|). The dominos |⌹| are what 
-is left over from the trail of their cycles.
+is left over from the trail of their cycles and the walls.
 @^Example@>
 
 \medskip\verbatim
@@ -680,60 +680,60 @@ $$\.{print-board} : \\{size}\times\\{walls}\times\\{position}
       (ol (1+ i))))
   (newline))
 
-@ We use Unicode APL symbols to represent each particular 
-element of the board. This means that you should have a proper, 
-unicode enabled terminal that can print these characters. We like 
-these characters because they look neat and different, and they are 
-rich enough to enable easy visual recognition during the game. Here's 
-the mapping from Symbol to meaning.@^Unicode@> @^notation@>
+@ We would like to use Unicode characters to render our board, since
+this would result in a much prettier board. However, because we have 
+some issues with some terminals that still do not yet have a proper 
+Unicode font installed on them, we will need to be able to switch 
+easily back and forth between using a less nice ASCII form and the 
+preferred Unicode forms. The Unicode forms should be the default, 
+but we should allow the user to fall back if they need to do so.
+
+To accomplish this, we establish a parameter |tron-use-unicode| 
+that will contain either false or true for whether or not we want 
+to enable unicode. By default, it will be true, meaning that we 
+will use unicode by default. User's who want to disable the use 
+of unicode in the library can simply evaluate |(tron-use-unicode #f)| 
+to get the ASCII version.@^Unicode@> @^notation@> @^board representation@>
+
+@p
+(define tron-use-unicode
+  (make-parameter #t 
+    (lambda (x)
+      (unless (boolean? x)
+        (error 'tron-use-unicode "invalid boolean value" x))
+      x)))
+@.tron-use-uniocde@>
+
+@ Here is a table of the symbols that we want to use. 
 
 $$\vbox{
   \offinterlineskip
   \halign{
-    \strut # \hfil & # \hfil \cr
-    {\bf Symbol} & {\bf Usage} \cr
+    \strut # \hfil & # \hfil & # \hfil \cr
+    {\bf Symbol} & {\bf ASCII} & {\bf Usage} \cr
     \noalign{\hrule}
-    |∘| & Regular, unoccupied square \cr
-    |⌹| & Wall or cycle trail \cr
-    |⍋| & Player 1 cycle \cr
-    |⍒| & Player 2 cycle \cr
-    |⍣| & Dead cycle \cr
+    |∘| & |.| & Regular, unoccupied square \cr
+    |⌹| & |#| & Wall or cycle trail \cr
+    |⍋| & |1| & Player 1 cycle \cr
+    |⍒| & |2| & Player 2 cycle \cr
+    |⍣| & |*| & Dead cycle \cr
   }
 }$$
 
-@ By default the game will be displayed using ascii characters.
-However, should you want to use the nicer apl font, simply run:
-|use-apl-font|. If you would like to switch back to the default
-font, simply run: |use-ascii-font|.
-
-@p
-(define apl-font? #f)
-@.apl-font?@>
-
-@p
-(define (use-apl-font)
-  (set! apl-font? #t))
-@.use-apl-font@>
-
-@p
-(define (use-ascii-font)
-  (set! apl-font? #f))
-@.use-ascii-font@>
+\noindent By default the game will use the Unicode characters, 
+and we use the paramter |tron-use-unicode| above to switch that 
+off if we want to use the ASCII variant.
 
 @c (walls i j pos1 pos2)
 @<Print representation for position@>=
+(define chars (if (tron-use-unicode) '#(⍣ ⌹ ⍋ ⍒ ∘) '#(* |#| 1 2 |.|)))
+(define (print t) (printf "~a " (vector-ref chars t)))
 (define p (cons j i))
-(let ([chars (if apl-font?
-		 (vector "⍣ " "⌹ " "⍋ " "⍒ " "∘ ")
-		 (vector "* " "# " "1 " "2 " "- "))])
-  (cond
-   [(member p walls)
-    (if (or (equal? p pos1) (equal? p pos2))
-	(printf (vector-ref chars 0))
-	(printf (vector-ref chars 1)))]
-   [(equal? p pos1) (printf (vector-ref chars 2))]
-   [(equal? p pos2) (printf (vector-ref chars 3))]
-   [else (printf (vector-ref chars 4))]))
+(cond
+  [(member p walls) (print (if (or (equal? p pos1) (equal? p pos2)) 0 1))]
+  [(equal? p pos1) (print 2)]
+  [(equal? p pos2) (print 3)]
+  [else (print 4)])
 
 @ We provide the |get-pos| procedure, which takes a move or direction 
 and an old position, and returns a new position assuming that we moved
