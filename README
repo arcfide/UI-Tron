@@ -1,4 +1,6 @@
-# Tron API 
+			############
+			# Tron API # 
+			############
 
 The main artifact of the IU Tron project is currently the Tron API,
 which is a Scheme library suitable for running tron games locally,
@@ -7,25 +9,49 @@ and for communicating to a remote server.
 As of version 1.0, only the local play and textual display is
 implemented.
 
-# Obtaining the Tron API 
+Obtaining the Tron API 
+----------------------
 
-http://idf.sacrideo.us/index.php/p/tron/downloads
+It is easiest to grab the code from the current repository. Just 
+run:
 
-# Prerequisites
+	git clone git://github.com/arcfide/UI-Tron.git
+
+You should now have an IU-Tron directory.
+
+Prerequisites
+-------------
 
 If you are building the Tron API from Source, then you will need 
 ChezWEB 2.0 or better.
 
-http://idf.sacrideo.us/index.php/p/chezweb/downloads
+	http://www.sacrideo.us/v5/proj/chezweb/
 
 If you are using one of the pre-tangled libraries, then you should 
 be able to use any current version of Chez Scheme, though the system 
-is tested on versions greater than 8.1. 
+is tested on versions greater than 8.4. 
 
-# Documentation
+If you are on an IU administered public system like tank or silo then 
+ChezWEB is installed already. You can enable ChezWEB by 
+running the following commands:
+
+	ln -sf /nobackup/awhsu/ChezWEB/cheztangle ~/bin/cheztangle
+	ln -sf /nobackup/awhsu/ChezWEB/chezweave ~/bin/chezweave
+
+Building
+--------
+
+After you have installed ChezWEB, you can run 'make' in the src/ directory 
+and it will build tronapi.ss and tronapi.pdf. tronapi.ss is the file 
+that you will load or import into Scheme, while tronapi.pdf is the code 
+listing and documentation that you will want to read. 
+
+Documentation
+-------------
 
 The Tron API is a literate program, and as a program API, most of the 
-important things are documented in the source itself. A woven version 
-of the source should be available separately as a PDF document 
-from the main Tron Downloads page listed above.
+important things are documented in the source itself. If documentation 
+or usage questions arise that are not covered by the tronapi.pdf document, 
+please file an issue so that we can address it.
+
 
