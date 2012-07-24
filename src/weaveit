@@ -1,3 +1,0 @@
-#!/bin/sh
-chezweave tronapi.web
-xetex -papersize=letter tronapi

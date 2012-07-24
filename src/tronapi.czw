@@ -1,11 +1,11 @@
 \input graphicx
 
-\def\title{TRON API (Version 1.1)}
+\def\title{TRON API (Version 1.11)}
 \def\topofcontents{\null\vfill
-  $$\includegraphics[width=6in]{logo_tron_black.eps}$$
+  $$\includegraphics[width=6in]{logo_tron_black}$$
   \centerline{\titlefont Tron API}
   \vskip 15pt
-  \centerline{(Version 1.1)}
+  \centerline{(Version 1.11)}
   \vfill}
 \def\botofcontents{\vfill
 \noindent
@@ -25,22 +25,6 @@ PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 }
-
-\font\titlefont = "STIXGeneral" at 17pt
-\font\ttitlefont = "APL385 Unicode" at 17pt
-\font\tt = "APL385 Unicode" at 10pt
-\font\rm = "STIXGeneral" at 10pt
-\font\bf = "STIXGeneral/B" at 10pt
-\font\it = "STIXGeneral/I" at 10pt
-\font\ninerm = "STIXGeneral" at 9pt
-\font\eightrm = "STIXGeneral" at 8pt
-\font\tenrm = "STIXGeneral" at 10pt
-\font\tentex = "APL385 Unicode" at 10pt
-\fontdimen7\tentex=0pt
-\let\mainfont=\tenrm
-\let\cmntfont\tenrm
-
-\rm
 
 @* Introduction. This document details the implementation of an
 API for the tron game used in CSCI-B351. The tron api is focused on
@@ -174,29 +158,29 @@ about this more in further sections when we talk about the syntax of
 
 @ Here's an example of the random brain in action, using the 
 printed representation from |play-tron|, which is described 
-later. Here, the first player is represented by |⍋| and has 
-won the game, whereas the |⍣| is the crashing, smoldering 
-remains of what was player 2 (|⍋|). The dominos |⌹| are what 
+later. Here, the first player is represented by |1| and has 
+won the game, whereas the |*| is the crashing, smoldering 
+remains of what was player 2 (|1|). The dominos |#| are what 
 is left over from the trail of their cycles and the walls.
 @^Example@>
 
 \medskip\verbatim
-                ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-                ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-                ⌹ ∘ ⌹ ⌹ ⍣ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-                ⌹ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⍋ ∘ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-                ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ 
-                ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
+                # # # # # # # # # # # # # # # # # # # # 
+                # # # # # . . . . . . . . . . . . . . # 
+                # . # # * . . . . . . . . . . . . . . # 
+                # . # # # . . . . . . . . . . . . . . # 
+                # . . . . . . . . . . . . . . . . . . # 
+                # . . . . . . . . . . . . . . . . . . # 
+                # . . . . . . . . . . . . . . . . . . # 
+                # . . . . . . . . . . . . . . . . . . # 
+                # . . . . . . . . . . . . . . . . . . # 
+                # . . . . . . . . . . . . . . . # 1 . # 
+                # . . . . . . . . . . . . . . . # # . # 
+                # . . . . . . . . . . . . . . . # # . # 
+                # . . . . . . . . . . . . . . . # # # # 
+                # . . . . . . . . . . . . . . . . . # # 
+                # . . . . . . . . . . . . . . . . . # # 
+                # # # # # # # # # # # # # # # # # # # # 
 !endverbatim
 
 @* 2 Creating brains. The syntax for defining a tron brain is as 
@@ -372,16 +356,16 @@ output.@^Examples@>
 > (play-tron '(37 . 10) (make-outer-walls '(37 . 10)) 
              '(1 . 1) '(35 . 8) random-move-bot random-move-bot)
 ...
-⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ⌹ 
-⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ∘ ⌹ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⍣ ⌹ ⌹ ⌹ ⌹ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ⌹ ⌹ ∘ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ⍋ ⌹ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ∘ ⌹ 
-⌹ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ∘ ⌹ ⌹ ⌹ 
-⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ ⌹ 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # . . . . . . . . . . . . . . . . . # # # # # . . . # 
+# # # # # # # # # # # . . . . . . . . . . . . . . . . . # . # # # # # # # 
+# # # . . . . # # # . . . . . . . . . . . . . . . . . . # # # # # # . # # 
+# . . . . . . . . # # . . . . . . . . . . . . . . . . . # # # * # # # # # 
+# . . . . . . . # # # . . . . . . . . . . . . . . . . . # # # # # # # # # 
+# . . . . # # . # . . . . . . . . . . . . . . . . . . . . . . . . . # # # 
+# . . . . 1 # # # # . . . . . . . . . . . . . . . . . . . . . . . . # . # 
+# . . . . . . # # # . . . . . . . . . . . . . . . . . . . . . . . . # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 Random Move Bot (Player 1) has won!!
 !endverbatim\medskip
@@ -712,11 +696,11 @@ $$\vbox{
     \strut # \hfil & # \hfil & # \hfil \cr
     {\bf Symbol} & {\bf ASCII} & {\bf Usage} \cr
     \noalign{\hrule}
-    |∘| & |.| & Regular, unoccupied square \cr
-    |⌹| & |#| & Wall or cycle trail \cr
-    |⍋| & |1| & Player 1 cycle \cr
-    |⍒| & |2| & Player 2 cycle \cr
-    |⍣| & |*| & Dead cycle \cr
+    |.| & |.| & Regular, unoccupied square \cr
+    |#| & |#| & Wall or cycle trail \cr
+    |1| & |1| & Player 1 cycle \cr
+    |2| & |2| & Player 2 cycle \cr
+    |*| & |*| & Dead cycle \cr
   }
 }$$
 
@@ -726,7 +710,7 @@ off if we want to use the ASCII variant.
 
 @c (walls i j pos1 pos2)
 @<Print representation for position@>=
-(define chars (if (tron-use-unicode) '#(⍣ ⌹ ⍋ ⍒ ∘) '#(* |#| 1 2 |.|)))
+(define chars (if (tron-use-unicode) '#(* # 1 2 .) '#(* |#| 1 2 |.|)))
 (define (print t) (printf "~a " (vector-ref chars t)))
 (define p (cons j i))
 (cond
